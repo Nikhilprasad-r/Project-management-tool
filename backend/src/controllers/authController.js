@@ -39,7 +39,9 @@ export const signUp = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
+export const validateToken = (req, res) => {
+  res.status(200).json({ msg: "Token is valid" });
+};
 export const activateAccount = async (req, res) => {
   const { token } = req.params;
 
