@@ -1,7 +1,8 @@
 import Project from "../models/Project.js";
 // Create a project
 export const createProject = async (req, res) => {
-  const newProject = new Project(req.body);
+  const newProject = new Project({ ...req.body, teamLeader: req.user._id });
+
   try {
     const savedProject = await newProject.save();
     res.status(201).send(savedProject);
@@ -14,7 +15,9 @@ export const createProject = async (req, res) => {
 
 export const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate("tasks");
+    const projects = await Project.find({ teamLeader: req.user._id }).populate(
+      "tasks"
+    );
     res.status(200).json(projects);
   } catch (error) {
     res.status(500).json(error);

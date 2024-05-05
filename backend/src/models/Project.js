@@ -15,5 +15,12 @@ const projectSchema = new mongoose.Schema({
       ref: "Task",
     },
   ],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  deploymentUrl: String,
+  codebaseUrl: String,
 });
+
 export default mongoose.model("Project", projectSchema);

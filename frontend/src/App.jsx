@@ -1,29 +1,25 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
+import ProjectList from "./components/ProjectList";
+import CreateProject from "./components/CreateProject";
+import TaskList from "./components/TaskList";
+import CreateTask from "./components/CreateTask";
+import Home from "./components/Home";
 
 function App() {
   return (
     <Router>
       <AppProvider>
-        {/* <Navigation />
-        <Switch>
-          <Route path="/" exact component={SignIn} />
-          <Route path="/signup" exact component={SignUp} />
-          <Route path="/activate/:token" exact component={Activate} />
-          <Route path="/resetpassword" exact component={ResetPassword} />
-          <Route
-            path="/resetpassword/:token"
-            exact
-            component={SubmitNewPassword}
-          />
-          <Route path="/projects" exact component={ProjectList} />
-          <Route path="/projects/create" exact component={ProjectForm} />
-          <Route path="/projects/edit/:id" exact component={ProjectForm} />
-          <Route path="/tasks" exact component={TaskList} />
-          <Route path="/tasks/edit/:id" exact component={TaskForm} />
-          <Route path="/tasks/create" exact component={TaskForm} />
-        </Switch> */}
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/projects" element={<ProjectList />} />
+            <Route path="/create-project" element={<CreateProject />} />
+            <Route path="/tasks" element={<TaskList />} />
+            <Route path="/create-task" element={<CreateTask />} />
+          </Routes>
+        </div>
       </AppProvider>
     </Router>
   );

@@ -31,11 +31,8 @@ export const AppProvider = ({ children }) => {
 
   const validateToken = async (token) => {
     try {
-      const response = await fetch(`${apiUrl}/auth/validatetoken`, {
-        headers: new Headers({
-          Authorization: `Bearer ${token}`,
-        }),
-        method: "GET",
+      const response = await axios.get(`${apiUrl}/auth/validatetoken`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       return response.ok;
     } catch (error) {
@@ -65,6 +62,30 @@ export const AppProvider = ({ children }) => {
       setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
+    }
+  };
+
+  const createProject = async (projectData) => {
+    if (!isAuthenticated) return;
+    try {
+      const response = await axios.post(`${apiUrl}/api/projects`, projectData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setProjects([...projects, response.data]);
+    } catch (error) {
+      console.error("Error creating project:", error);
+    }
+  };
+
+  const createTask = async (taskData) => {
+    if (!isAuthenticated) return;
+    try {
+      const response = await axios.post(`${apiUrl}/api/tasks`, taskData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setTasks([...tasks, response.data]);
+    } catch (error) {
+      console.error("Error creating task:", error);
     }
   };
 
@@ -113,6 +134,8 @@ export const AppProvider = ({ children }) => {
         tasks,
         setProjects,
         setTasks,
+        createProject,
+        createTask,
       }}
     >
       {children}
