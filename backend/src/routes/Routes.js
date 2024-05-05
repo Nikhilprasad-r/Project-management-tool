@@ -18,7 +18,7 @@ import {
   deleteTask,
   getTasks,
   taskUpdate,
-} from "../controllers/taskControllers.js";
+} from "../controllers/appControllers.js";
 router.post("/auth/signup", signUp);
 router.post("/auth/signin", signIn);
 router.post("/auth/reset-password", resetPassword);
