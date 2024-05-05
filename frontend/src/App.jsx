@@ -1,15 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { ProjectProvider } from "./components/ProjectContext";
-import ProjectList from "./components/ProjectList";
-import ProjectForm from "./components/ProjectForm";
-import Navigation from "./components/Navigation";
+import { AppProvider } from "./context/AppContext";
 
 function App() {
   return (
     <Router>
-      <ProjectProvider>
-        <Navigation />
+      <AppProvider>
+        {/* <Navigation />
         <Switch>
           <Route path="/" exact component={SignIn} />
           <Route path="/signup" exact component={SignUp} />
@@ -26,8 +23,8 @@ function App() {
           <Route path="/tasks" exact component={TaskList} />
           <Route path="/tasks/edit/:id" exact component={TaskForm} />
           <Route path="/tasks/create" exact component={TaskForm} />
-        </Switch>
-      </ProjectProvider>
+        </Switch> */}
+      </AppProvider>
     </Router>
   );
 }
