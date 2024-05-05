@@ -1,7 +1,7 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useApp } from "./context/AppContext";
+import { useApp } from "../context/AppContext";
 
 const SignIn = () => {
   const { signIn } = useApp();
@@ -107,7 +107,7 @@ const SignIn = () => {
                       </div>
                     </div>
                     <a
-                      href="#"
+                      href="/reset-password"
                       className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
                     >
                       Forgot password?
@@ -126,7 +126,7 @@ const SignIn = () => {
             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
               Don’t have an account yet?{" "}
               <a
-                href="#"
+                href="/signup"
                 className="font-medium text-primary-600 hover:underline dark:text-primary-500"
               >
                 Sign up
