@@ -7,7 +7,8 @@ const UserSchema = new mongoose.Schema({
   mobileNumber: { type: String, required: true, unique: true },
   dob: { type: Date, required: true },
   password: { type: String, required: true },
-  isActive: { type: Boolean, required: true, default: false }, // defaulting to false to require activation
+  isActive: { type: Boolean, required: true, default: false },
+  isAdmin: { type: Boolean, default: false },
 });
 
 UserSchema.pre("save", async function (next) {

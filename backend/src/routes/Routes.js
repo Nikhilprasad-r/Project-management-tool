@@ -1,5 +1,6 @@
 import express from "express";
 import auth from "../middleware/authMiddleware.js";
+import isAdmin from "../middleware/isAdmin.js";
 const router = express.Router();
 import {
   signIn,
@@ -18,6 +19,8 @@ import {
   deleteTask,
   getTasks,
   taskUpdate,
+  getAllUsersWithProjects,
+  updateProjectEvaluation,
 } from "../controllers/appControllers.js";
 router.post("/auth/signup", signUp);
 router.post("/auth/signin", signIn);
@@ -33,4 +36,11 @@ router.post("/api/tasks", taskCreation);
 router.get("/api/tasks", getTasks);
 router.put("/api/tasks/:id", taskUpdate);
 router.delete("/api/tasks/:id", deleteTask);
+router.get("/admin/users-projects", auth, isAdmin, getAllUsersWithProjects);
+router.post(
+  "/admin/projects/evaluation",
+  auth,
+  isAdmin,
+  updateProjectEvaluation
+);
 export default router;

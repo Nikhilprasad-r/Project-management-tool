@@ -92,3 +92,41 @@ export const deleteTask = async (req, res) => {
     res.status(500).json(error);
   }
 };
+export const getAllUsersWithProjects = async (req, res) => {
+  if (!req.user.isAdmin) {
+    return res.status(403).json({ msg: "Unauthorized" });
+  }
+
+  try {
+    const users = await User.find().populate({
+      path: "projects",
+      populate: { path: "tasks" },
+    });
+    res.json(users);
+  } catch (error) {
+    console.error("Failed to retrieve users:", error);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+export const updateProjectEvaluation = async (req, res) => {
+  const { projectId, totalMarks, evaluation } = req.body;
+  if (!req.user.isAdmin) {
+    return res.status(403).json({ msg: "Unauthorized" });
+  }
+
+  try {
+    const project = await Project.findByIdAndUpdate(
+      projectId,
+      { $set: { totalMarks: totalMarks, evaluation: evaluation } },
+      { new: true }
+    );
+    if (project) {
+      res.json({ msg: "Project evaluation updated successfully", project });
+    } else {
+      res.status(404).json({ msg: "Project not found" });
+    }
+  } catch (error) {
+    console.error("Error updating project evaluation:", error);
+    res.status(500).json({ msg: "Server error" });
+  }
+};

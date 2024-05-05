@@ -21,6 +21,8 @@ const projectSchema = new mongoose.Schema({
   },
   deploymentUrl: String,
   codebaseUrl: String,
+  totalMarks: { type: Number, default: 0 },
+  evaluation: { type: String, default: "" },
 });
 
 export default mongoose.model("Project", projectSchema);

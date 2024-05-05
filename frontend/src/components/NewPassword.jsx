@@ -10,7 +10,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 const NewPassword = () => {
   const { token } = useParams();
-  const navigate = useNavigate(); // Use navigate for post-action redirection
+  const navigate = useNavigate();
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     setSubmitting(true);
@@ -18,13 +18,12 @@ const NewPassword = () => {
       const response = await axios.post(`${apiUrl}/auth/reset/${token}`, {
         password: values.password,
       });
-      // Instead of alert, consider using a notification system or state to handle feedback
-      console.log("Password reset successfully"); // Consider replacing this with a more robust feedback mechanism
+
+      console.log("Password reset successfully");
       resetForm();
-      navigate("/signin"); // Redirect to sign-in page after reset
+      navigate("/signin");
     } catch (error) {
       console.error("Failed to reset password", error);
-      // Handle error state here, possibly updating component state to show error
     }
     setSubmitting(false);
   };
