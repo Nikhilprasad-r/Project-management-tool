@@ -11,8 +11,6 @@ export const createProject = async (req, res) => {
   }
 };
 
-// Get all projects
-
 export const getProjects = async (req, res) => {
   try {
     const projects = await Project.find({ teamLeader: req.user._id }).populate(
@@ -23,8 +21,6 @@ export const getProjects = async (req, res) => {
     res.status(500).json(error);
   }
 };
-
-// Update a project
 
 export const projectUpdate = async (req, res) => {
   try {
@@ -38,8 +34,6 @@ export const projectUpdate = async (req, res) => {
     res.status(400).json(error);
   }
 };
-
-// Delete a project
 
 export const deleteProject = async (req, res) => {
   try {
@@ -83,7 +77,6 @@ export const taskUpdate = async (req, res) => {
   }
 };
 
-// Delete a task
 export const deleteTask = async (req, res) => {
   try {
     await Task.findByIdAndDelete(req.params.id);
@@ -108,12 +101,12 @@ export const getAllUsersWithProjects = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
+
 export const updateProjectEvaluation = async (req, res) => {
   const { projectId, totalMarks, evaluation } = req.body;
   if (!req.user.isAdmin) {
     return res.status(403).json({ msg: "Unauthorized" });
   }
-
   try {
     const project = await Project.findByIdAndUpdate(
       projectId,
