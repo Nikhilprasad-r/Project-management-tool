@@ -9,14 +9,13 @@ const AdminPanel = () => {
     const fetchData = async () => {
       try {
         const result = await axios.get(
-          "http://your-api-url/api/users-projects"
+          `${process.env.VITE_API_URL}/api/projects`
         );
         setData(result.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
   }, []);
 

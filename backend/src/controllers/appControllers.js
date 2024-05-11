@@ -98,14 +98,6 @@ export const getTasksByUser = async (req, res) => {
     res.status(500).json(error);
   }
 };
-export const getTasksByTeamLeader = async (req, res) => {
-  try {
-    const tasks = await Task.find({ teamLeader: req.params.teamLeaderId });
-    res.status(200).json(tasks);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-};
 export const getTasksByCategory = async (req, res) => {
   try {
     const tasks = await Task.find({ category: req.params.category });
@@ -127,7 +119,30 @@ export const taskUpdate = async (req, res) => {
     res.status(400).json(error);
   }
 };
-
+export const completeTask = async (req, res) => {
+  try {
+    const updatedTask = await Task.findByIdAndUpdate(
+      req.params.id,
+      { $set: { completedAt: new Date() } },
+      { new: true }
+    );
+    res.status(200).json(updatedTask);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+export const completeProject = async (req, res) => {
+  try {
+    const updatedProject = await Project.findByIdAndUpdate(
+      req.params.projectid,
+      { $set: { completedAt: new Date() } },
+      { new: true }
+    );
+    res.status(200).json(updatedProject);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
 export const deleteTask = async (req, res) => {
   try {
     await Task.findByIdAndDelete(req.params.id);

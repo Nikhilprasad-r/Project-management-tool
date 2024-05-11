@@ -21,7 +21,6 @@ const AccountActivation = () => {
 
       try {
         const response = await axios.post(`${apiUrl}/auth/activate/${token}`);
-        console.log("Account activated:", response.data);
         setTimeout(() => navigate("/signin", { replace: true }), 3000); // Redirect after 3 seconds
         setLoading(false);
       } catch (err) {

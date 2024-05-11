@@ -20,6 +20,7 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/admin" element={<AdminPanel />} />
             <Route path="/projects" element={<ProjectList />} />
             <Route path="/create-project" element={<CreateProject />} />
             <Route path="/tasks" element={<TaskList />} />
@@ -30,6 +31,8 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/new-password/:token" element={<NewPassword />} />
             <Route path="/task/:taskId" element={<TaskDetails />} />
+            <Route path="/projects/:projectId" element={<ProjectDetails />} />
+            <Route path="*" element={<Home />} />
           </Routes>
         </div>
       </AppProvider>
