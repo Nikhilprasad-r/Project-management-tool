@@ -5,6 +5,7 @@ const projectSchema = new mongoose.Schema({
   description: String,
   category: String,
   deadlines: Date,
+  technologies: [String],
   teamLeader: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -33,7 +34,28 @@ const projectSchema = new mongoose.Schema({
   deploymentUrl: String,
   codebaseUrl: String,
   totalMarks: { type: Number, default: 0 },
-  evaluation: { type: String, default: "" },
+  evaluation: {
+    type: String,
+    default: "pending",
+  },
+  comments: [
+    {
+      comment: String,
+      commentedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      commentedAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+  status: {
+    type: String,
+    default: "pending",
+  },
+  cost: { type: Number, default: 0 },
 });
 
 export default mongoose.model("Project", projectSchema);

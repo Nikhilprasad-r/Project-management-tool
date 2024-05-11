@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const taskSchema = new mongoose.Schema({
   taskName: String,
   description: String,
-  technologies: [String],
   deadline: Date,
   teamLeader: {
     type: mongoose.Schema.Types.ObjectId,
@@ -11,6 +10,10 @@ const taskSchema = new mongoose.Schema({
   },
   category: String,
   fileAttachments: [String],
+  versionBranch: {
+    type: String,
+    default: null,
+  },
   projectId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Project",
@@ -29,6 +32,24 @@ const taskSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  comments: [
+    {
+      comment: String,
+      commentedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      commentedAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+  status: {
+    type: String,
+    default: "pending",
+  },
+  cost: { type: Number, default: 0 },
 });
 
 export default mongoose.model("Task", taskSchema);

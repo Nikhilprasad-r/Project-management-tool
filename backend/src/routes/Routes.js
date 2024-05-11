@@ -31,6 +31,7 @@ import {
   getTasksByProjectId,
   getTasksByUser,
   completeProject,
+  getallProjects,
 } from "../controllers/appControllers.js";
 //auth routes
 router.post("/auth/signup", signUp);
@@ -45,8 +46,9 @@ router.get("/admin/users", auth, isAdmin, getUsers);
 router.put("/admin/user/:id", auth, updateUser);
 router.delete("/admin/user/:id", auth, isAdmin, deleteUser);
 router.get("/admin/users-projects", auth, isAdmin, getAllUsersWithProjects);
+router.get("/admin/projects", auth, isAdmin, getallProjects);
 //project routes
-router.get("/api/projects", auth, getProjects);
+router.get("/api/projects", auth, isTl, getProjects);
 router.post("/api/project", auth, isAdmin, createProject);
 router.put("/api/project/:id", auth, isTl, projectUpdate);
 router.delete("/api/project/:id", auth, isAdmin, deleteProject);

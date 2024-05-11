@@ -8,13 +8,17 @@ const TaskDetails = () => {
   const [task, setTask] = useState(null);
 
   useEffect(() => {
-    const loadTaskDetails = async () => {
-      const fetchedTask = await fetchTaskDetails(taskId);
-      setTask(fetchedTask);
-    };
+    if (user) {
+      const loadTaskDetails = async () => {
+        const fetchedTask = await fetchTaskDetails(taskId);
+        setTask(fetchedTask);
+      };
 
-    if (taskId) {
-      loadTaskDetails();
+      if (taskId) {
+        loadTaskDetails();
+      }
+    } else {
+      useNavigate("/login");
     }
   }, [taskId, fetchTaskDetails]);
 

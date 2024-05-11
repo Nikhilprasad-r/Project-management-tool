@@ -1,10 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
+import { useApp } from "../context/AppContext";
 const ProjectDetails = ({ project }) => {
   const [marks, setMarks] = useState(project.totalMarks || 0);
   const [evaluation, setEvaluation] = useState(project.evaluation || "");
   const [submitting, setSubmitting] = useState(false);
+  useEffect(() => {
+    if (user.role === "tl") {
+      const fetchData = async () => {
+        try {
+          const result = await axios.get(
+            `${process.env.VITE_API_URL}/api/project/${project.id}`
+          );
+          setData(result.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+      fetchData();
+    } else {
+      useNavigate("/");
+    }
+  });
 
   const completedTasks = project.tasks.filter(
     (task) => task.isCompleted
