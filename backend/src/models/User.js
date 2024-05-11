@@ -9,6 +9,26 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   isActive: { type: Boolean, required: true, default: false },
   isAdmin: { type: Boolean, default: false },
+  role: { type: String, required: true, default: "user", required: true },
+  profilePic: { type: String },
+  hourlyRate: { type: Number, required: true },
+  skills: [{ type: String }],
+  projects: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+    },
+  ],
+  tasks: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Task",
+    },
+  ],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 UserSchema.pre("save", async function (next) {

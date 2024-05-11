@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema({
-  projectName: String,
+  taskName: String,
   description: String,
   technologies: [String],
   deadline: Date,
@@ -19,6 +19,16 @@ const taskSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  completedAt: {
+    type: Date,
+    default: null,
+  },
+  assignedTo: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
 });
 
 export default mongoose.model("Task", taskSchema);

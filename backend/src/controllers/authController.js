@@ -1,12 +1,16 @@
 import User from "../models/User.js";
 import Token from "../models/Token.js";
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
-import { sendResetEmail, sendActivationEmail } from "../utils/mailer.js";
+import crypto, { randomUUID } from "crypto";
+import {
+  sendResetEmail,
+  sendActivationEmail,
+  sendWelcomeEmail,
+} from "../utils/mailer.js";
 import jwt from "jsonwebtoken";
 
 export const signUp = async (req, res) => {
-  const { name, email, mobileNumber, dob, password } = req.body;
+  const { name, email, mobileNumber, dob, password, profilePic } = req.body;
   try {
     let user = await User.findOne({ email: email });
     if (user) {
@@ -19,6 +23,8 @@ export const signUp = async (req, res) => {
       mobileNumber,
       dob,
       password,
+      isadmin: true,
+      profilePic,
     });
 
     await user.save();
@@ -77,7 +83,6 @@ export const resetPassword = async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    // Remove existing reset tokens
     await Token.deleteMany({ userId: user._id, type: "reset" });
 
     const token = new Token({
@@ -120,10 +125,26 @@ export const submitNewPassword = async (req, res) => {
 };
 
 export const signIn = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, mobileNumber, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    if (!email && !mobileNumber) {
+      console.error("Sign in failed: Email or mobile number is required");
+      return res
+        .status(400)
+        .json({ msg: "Email or mobile number is required" });
+    }
+    if (!password) {
+      console.error("Sign in failed: Password is required");
+      return res.status(400).json({ msg: "Password is required" });
+    }
+    let user;
+    if (email) {
+      user = await User.findOne({ email });
+    } else if (mobileNumber) {
+      user = await User.findOne({ mobileNumber });
+    }
+
     if (!user) {
       console.error("Sign in failed: User not found for email:", email);
       return res.status(404).json({ msg: "User not found" });
@@ -145,6 +166,7 @@ export const signIn = async (req, res) => {
         id: user.id,
         email: user.email,
         name: user.name,
+        mobileNumber: user.mobileNumber,
         isActive: user.isActive,
       },
     };
@@ -162,6 +184,96 @@ export const signIn = async (req, res) => {
       }
     );
   } catch (err) {
+    res.status(500).send("Server error");
+  }
+};
+
+export const createUser = async (req, res) => {
+  const { name, email, mobileNumber, skills, hourlyRate } = req.body;
+  try {
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ msg: "User already exists" });
+    }
+    const password = randomUUID();
+    user = new User({
+      name,
+      email,
+      mobileNumber,
+      skills,
+      hourlyRate,
+      password: password,
+      isActive: true,
+    });
+    await user.save();
+    sendWelcomeEmail(email, password);
+    res.status(201).json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+export const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const {
+    name,
+    email,
+    mobileNumber,
+    skills,
+    profilePic,
+    hourlyRate,
+    role,
+    isActive,
+    isAdmin,
+    dob,
+  } = req.body;
+  try {
+    let user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    user = await User.findByIdAndUpdate(
+      id,
+      {
+        name,
+        email,
+        mobileNumber,
+        skills,
+        profilePic,
+        hourlyRate,
+        role,
+        isActive,
+        isAdmin,
+        dob,
+      },
+      { new: true }
+    );
+    res.status(200).json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
+export const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("Server error");
   }
 };

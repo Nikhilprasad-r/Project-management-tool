@@ -1,5 +1,7 @@
 import Project from "../models/Project.js";
-// Create a project
+import Task from "../models/Task.js";
+import User from "../models/User.js";
+
 export const createProject = async (req, res) => {
   const newProject = new Project({ ...req.body, teamLeader: req.user._id });
 
@@ -45,6 +47,16 @@ export const deleteProject = async (req, res) => {
 };
 
 export const taskCreation = async (req, res) => {
+  const {
+    projectId,
+    assignedTo,
+    taskName,
+    description,
+    technologies,
+    teamLeader,
+    deadline,
+    category,
+  } = req.body;
   const newTask = new Task(req.body);
   try {
     const savedTask = await newTask.save();
@@ -62,8 +74,47 @@ export const getTasks = async (req, res) => {
     res.status(500).json(error);
   }
 };
+export const getTasksByProject = async (req, res) => {
+  try {
+    const tasks = await Task.find({ projectId: req.params.projectId });
+    res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+export const getTask = async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+    res.status(200).json(task);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+export const getTasksByUser = async (req, res) => {
+  try {
+    const tasks = await Task.find({ assignedTo: req.params.userId });
+    res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+export const getTasksByTeamLeader = async (req, res) => {
+  try {
+    const tasks = await Task.find({ teamLeader: req.params.teamLeaderId });
+    res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+export const getTasksByCategory = async (req, res) => {
+  try {
+    const tasks = await Task.find({ category: req.params.category });
+    res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 
-// Update a task
 export const taskUpdate = async (req, res) => {
   try {
     const updatedTask = await Task.findByIdAndUpdate(
