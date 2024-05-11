@@ -1,23 +1,24 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { AppProvider } from "./context/AppContext";
-import Home from "./components/Home";
-import ProjectList from "./components/ProjectList";
-import CreateProject from "./components/CreateProject";
-import TaskList from "./components/TaskList";
-import CreateTask from "./components/CreateTask";
-import SignIn from "./components/SignIn";
-import SignUp from "./components/SignUp";
-import AccountActivation from "./components/AccountActivation";
-import ResetPassword from "./components/ResetPassword";
-import NewPassword from "./components/NewPassword";
-import TaskDetails from "./components/TaskDetails";
+// import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+// import { AppProvider } from "./context/AppContext";
+// import Home from "./components/Home";
+// import ProjectList from "./components/ProjectList";
+// import TaskList from "./components/TaskList";
+// import CreateTask from "./components/CreateTask";
+// import SignIn from "./components/SignIn";
+// import SignUp from "./components/SignUp";
+// import AccountActivation from "./components/AccountActivation";
+// import ResetPassword from "./components/ResetPassword";
+// import NewPassword from "./components/NewPassword";
+// import TaskDetails from "./components/TaskDetails";
+import ProjectForm from "./components/ProjectForm";
 
 function App() {
-  return (
-    <Router>
+  return <ProjectForm />;
+  /*   <Router>
       <AppProvider>
-        <div className="App">
+        <TaskDetails />
+       <div className="App">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/admin" element={<AdminPanel />} />
@@ -34,10 +35,9 @@ function App() {
             <Route path="/projects/:projectId" element={<ProjectDetails />} />
             <Route path="*" element={<Home />} />
           </Routes>
-        </div>
+        </div> 
       </AppProvider>
-    </Router>
-  );
+    </Router>*/
 }
 
 export default App;
