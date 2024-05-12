@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const AppContext = createContext();
 
@@ -18,6 +19,14 @@ export const AppProvider = ({ children }) => {
   const signIn = async (token, userData) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
+    if (userData.isadmin) {
+      useNavigate("/admin");
+    } else if (userData.role === "tl") {
+      useNavigate("/teamleader");
+    } else {
+      useNavigate("/developer");
+    }
+
     setIsAuthenticated(true);
     setUser(userData);
   };
@@ -77,12 +86,6 @@ export const AppProvider = ({ children }) => {
         signIn,
         signOut,
         apiUrl,
-        projects,
-        tasks,
-        setProjects,
-        setTasks,
-        createProject,
-        createTask,
       }}
     >
       {children}

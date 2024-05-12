@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, FieldArray } from "formik";
 import * as yup from "yup";
 import Swal from "sweetalert2";
+import TaskDetails from "./TaskDetails";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -51,6 +52,27 @@ const initialValues = {
 
 const ProjectForm = ({ project = initialValues }) => {
   const [newComment, setNewComment] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [selectedTaskId, setSelectedTaskId] = useState("");
+  const fetchTasks = async () => {
+    try {
+      const result = await axios.get(
+        `${process.env.VITE_API_URL}/api/tasks/project/${project._id}`
+      );
+      setTasks(result.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const handleTaskSelect = (e) => {
+    setSelectedTaskId(e.target.value);
+  };
+
+  useEffect(() => {
+    if (project._id) {
+      fetchTasks();
+    }
+  }, [project._id]);
 
   const deleteProject = async (id) => {
     Swal.fire({
@@ -113,212 +135,230 @@ const ProjectForm = ({ project = initialValues }) => {
   };
 
   return (
-    <Formik
-      initialValues={project || initialValues}
-      validationSchema={validationSchema}
-      onSubmit={onSubmit}
-      enableReinitialize
-    >
-      {({ values, handleChange, setFieldValue }) => (
-        <Form className="space-y-4 max-w-[700px] mx-auto mt-12 rounded-2xl bg-slate-500 p-8">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Title
-            </label>
-            <Field
-              name="title"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Description
-            </label>
-            <Field
-              as="textarea"
-              name="description"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              rows="3"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Category
-            </label>
-            <Field
-              as="select"
-              name="category"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="">Select a category</option>
-              <option value="Software Development">Software Development</option>
-              <option value="Research">Research</option>
-              <option value="Marketing Project">Marketing Project</option>
-            </Field>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Deadline
-            </label>
-            <Field
-              type="date"
-              name="deadlines"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Technologies
-            </label>
-            <FieldArray name="technologies">
-              {({ push, remove, form }) => (
-                <>
-                  {form.values.technologies.map((technology, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Field
-                        name={`technologies.${index}`}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => remove(index)}
-                        className="mt-1 px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => push("")}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
-                  >
-                    Add Technology
-                  </button>
-                </>
-              )}
-            </FieldArray>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Total Man Days
-            </label>
-            <Field
-              type="number"
-              name="totalManDays"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Deployment URL
-            </label>
-            <Field
-              type="url"
-              name="deploymentUrl"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Codebase URL
-            </label>
-            <Field
-              type="url"
-              name="codebaseUrl"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Total Marks
-            </label>
-            <Field
-              type="number"
-              name="totalMarks"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Evaluation
-            </label>
-            <Field
-              as="select"
-              name="evaluation"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="pending">Pending</option>
-              <option value="completed">Completed</option>
-              <option value="excellent">Excellent</option>
-            </Field>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Status
-            </label>
-            <Field
-              as="select"
-              name="status"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="pending">Pending</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-            </Field>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Cost
-            </label>
-            <Field
-              type="number"
-              name="cost"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Comments
-            </label>
-            <FieldArray name="comments">
-              {({ push, form }) => (
-                <>
-                  {form.values.comments.map((comment, index) => (
-                    <div key={index} className="bg-gray-100 rounded p-2 mb-2">
-                      <p className="text-sm text-gray-800">{comment.comment}</p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(comment.commentedAt).toLocaleString()}
-                      </p>
-                    </div>
-                  ))}
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    rows="2"
-                  ></textarea>
-                  <button
-                    type="button"
-                    onClick={() => handleAddComment(push)}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
-                  >
-                    Add Comment
-                  </button>
-                </>
-              )}
-            </FieldArray>
-          </div>
+    <div>
+      <Formik
+        initialValues={project || initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+        enableReinitialize
+      >
+        {({ values, handleChange, setFieldValue }) => (
+          <Form className="space-y-4 max-w-[700px] mx-auto mt-12 rounded-2xl bg-slate-500 p-8">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Title
+              </label>
+              <Field
+                name="title"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Description
+              </label>
+              <Field
+                as="textarea"
+                name="description"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                rows="3"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Category
+              </label>
+              <Field
+                as="select"
+                name="category"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              >
+                <option value="">Select a category</option>
+                <option value="Software Development">
+                  Software Development
+                </option>
+                <option value="Research">Research</option>
+                <option value="Marketing Project">Marketing Project</option>
+              </Field>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Deadline
+              </label>
+              <Field
+                type="date"
+                name="deadlines"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Technologies
+              </label>
+              <FieldArray name="technologies">
+                {({ push, remove, form }) => (
+                  <>
+                    {form.values.technologies.map((technology, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <Field
+                          name={`technologies.${index}`}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className="mt-1 px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => push("")}
+                      className="mt-2 px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
+                    >
+                      Add Technology
+                    </button>
+                  </>
+                )}
+              </FieldArray>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Total Man Days
+              </label>
+              <Field
+                type="number"
+                name="totalManDays"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Deployment URL
+              </label>
+              <Field
+                type="url"
+                name="deploymentUrl"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Codebase URL
+              </label>
+              <Field
+                type="url"
+                name="codebaseUrl"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Total Marks
+              </label>
+              <Field
+                type="number"
+                name="totalMarks"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Evaluation
+              </label>
+              <Field
+                as="select"
+                name="evaluation"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              >
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="excellent">Excellent</option>
+              </Field>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Status
+              </label>
+              <Field
+                as="select"
+                name="status"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              >
+                <option value="pending">Pending</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+              </Field>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Cost
+              </label>
+              <Field
+                type="number"
+                name="cost"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Comments
+              </label>
+              <FieldArray name="comments">
+                {({ push, form }) => (
+                  <>
+                    {form.values.comments.map((comment, index) => (
+                      <div key={index} className="bg-gray-100 rounded p-2 mb-2">
+                        <p className="text-sm text-gray-800">
+                          {comment.comment}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {new Date(comment.commentedAt).toLocaleString()}
+                        </p>
+                      </div>
+                    ))}
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      rows="2"
+                    ></textarea>
+                    <button
+                      type="button"
+                      onClick={() => handleAddComment(push)}
+                      className="mt-2 px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
+                    >
+                      Add Comment
+                    </button>
+                  </>
+                )}
+              </FieldArray>
+            </div>
 
-          <button
-            type="submit"
-            className="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600"
-          >
-            Save Changes
-          </button>
-        </Form>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600"
+            >
+              Save Changes
+            </button>
+          </Form>
+        )}
+      </Formik>
+      <h2>Select a Task</h2>
+      <select onChange={handleTaskSelect} value={selectedTaskId}>
+        <option value="">Select a task</option>
+        {tasks.map((task) => (
+          <option key={task._id} value={task._id}>
+            {task.taskName}
+          </option>
+        ))}
+      </select>
+      {selectedTaskId && (
+        <TaskDetails task={tasks.find((task) => task._id === selectedTaskId)} />
       )}
-    </Formik>
+    </div>
   );
 };
 
