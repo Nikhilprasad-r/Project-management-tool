@@ -1,7 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useApp } from "../context/AppContext";
 
 const Navbar = () => {
+  const { signOut } = useApp();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
   return (
     <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
       <div className="px-3 py-3 lg:px-8 lg:pl-5">
@@ -43,8 +50,8 @@ const Navbar = () => {
                 <button
                   type="button"
                   className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                  aria-expanded="false"
-                  data-dropdown-toggle="dropdown-user"
+                  aria-expanded={isDropdownOpen}
+                  onClick={toggleDropdown}
                 >
                   <span className="sr-only">Open user menu</span>
                   <img
@@ -54,63 +61,65 @@ const Navbar = () => {
                   />
                 </button>
               </div>
-              <div
-                className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
-                id="dropdown-user"
-              >
-                <div className="px-4 py-3" role="none">
-                  <p
-                    className="text-sm text-gray-900 dark:text-white"
-                    role="none"
-                  >
-                    Nikhil Prasad
-                  </p>
-                  <p
-                    className="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
-                    role="none"
-                  >
-                    nikhil@seeuinweb.com
-                  </p>
+              {isDropdownOpen && (
+                <div
+                  className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
+                  id="dropdown-user"
+                >
+                  <div className="px-4 py-3" role="none">
+                    <p
+                      className="text-sm text-gray-900 dark:text-white"
+                      role="none"
+                    >
+                      Nikhil Prasad
+                    </p>
+                    <p
+                      className="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
+                      role="none"
+                    >
+                      nikhil@seeuinweb.com
+                    </p>
+                  </div>
+                  <ul className="py-1" role="none">
+                    <li>
+                      <Link
+                        to="#"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                        role="menuitem"
+                      >
+                        Dashboard
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="#"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                        role="menuitem"
+                      >
+                        Settings
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="#"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                        role="menuitem"
+                      >
+                        Earnings
+                      </Link>
+                    </li>
+                    <li>
+                      <Button
+                        onClick={signOut}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                        role="menuitem"
+                      >
+                        Sign out
+                      </Button>
+                    </li>
+                  </ul>
                 </div>
-                <ul className="py-1" role="none">
-                  <li>
-                    <Link
-                      to="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                      role="menuitem"
-                    >
-                      Dashboard
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                      role="menuitem"
-                    >
-                      Settings
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                      role="menuitem"
-                    >
-                      Earnings
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                      role="menuitem"
-                    >
-                      Sign out
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+              )}
             </div>
           </div>
         </div>
