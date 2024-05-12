@@ -74,7 +74,6 @@ export const activateAccount = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 export const resetPassword = async (req, res) => {
   const { email } = req.body;
   try {
@@ -101,7 +100,6 @@ export const resetPassword = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 export const submitNewPassword = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
@@ -123,7 +121,6 @@ export const submitNewPassword = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 export const signIn = async (req, res) => {
   const { email, mobileNumber, password } = req.body;
 
@@ -187,7 +184,6 @@ export const signIn = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 export const createUser = async (req, res) => {
   const { name, email, mobileNumber, skills, hourlyRate } = req.body;
   try {
@@ -213,7 +209,6 @@ export const createUser = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 export const updateUser = async (req, res) => {
   const { id } = req.params;
   const {

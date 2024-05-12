@@ -9,4 +9,4 @@ const isTl = (req, res, next) => {
       .json({ msg: "Access denied. Team leaders only have access" });
   }
 };
-export default isAdmin;
+export default isTl;

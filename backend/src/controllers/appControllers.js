@@ -30,7 +30,6 @@ export const getProjects = async (req, res) => {
     res.status(500).json(error);
   }
 };
-
 export const projectUpdate = async (req, res) => {
   try {
     const updatedProject = await Project.findByIdAndUpdate(
@@ -43,7 +42,6 @@ export const projectUpdate = async (req, res) => {
     res.status(400).json(error);
   }
 };
-
 export const deleteProject = async (req, res) => {
   try {
     await Project.findByIdAndDelete(req.params.id);
@@ -52,7 +50,6 @@ export const deleteProject = async (req, res) => {
     res.status(500).json(error);
   }
 };
-
 export const taskCreation = async (req, res) => {
   const {
     projectId,
@@ -72,7 +69,6 @@ export const taskCreation = async (req, res) => {
     res.status(400).json(error);
   }
 };
-
 export const getTasks = async (req, res) => {
   try {
     const tasks = await Task.find();
@@ -81,7 +77,7 @@ export const getTasks = async (req, res) => {
     res.status(500).json(error);
   }
 };
-export const getTasksByProject = async (req, res) => {
+export const getTasksByProjectId = async (req, res) => {
   try {
     const tasks = await Task.find({ projectId: req.params.projectId });
     res.status(200).json(tasks);
@@ -89,7 +85,7 @@ export const getTasksByProject = async (req, res) => {
     res.status(500).json(error);
   }
 };
-export const getTask = async (req, res) => {
+export const getTaskById = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
     res.status(200).json(task);
@@ -113,7 +109,6 @@ export const getTasksByCategory = async (req, res) => {
     res.status(500).json(error);
   }
 };
-
 export const taskUpdate = async (req, res) => {
   try {
     const updatedTask = await Task.findByIdAndUpdate(
@@ -174,7 +169,6 @@ export const getAllUsersWithProjects = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
-
 export const updateProjectEvaluation = async (req, res) => {
   const { projectId, totalMarks, evaluation } = req.body;
   if (!req.user.isAdmin) {
