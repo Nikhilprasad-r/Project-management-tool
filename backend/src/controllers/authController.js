@@ -165,6 +165,8 @@ export const signIn = async (req, res) => {
         name: user.name,
         mobileNumber: user.mobileNumber,
         isActive: user.isActive,
+        isAdmin: user.isAdmin,
+        role: user.role,
       },
     };
 

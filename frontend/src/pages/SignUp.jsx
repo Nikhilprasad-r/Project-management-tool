@@ -5,6 +5,7 @@ import axios from "axios";
 import { useApp } from "../context/AppContext";
 
 const SignUp = () => {
+  const { apiUrl } = useApp();
   const initialValues = {
     name: "",
     dob: "",
@@ -30,8 +31,8 @@ const SignUp = () => {
   const onSubmit = async (values, { setSubmitting, resetForm }) => {
     setSubmitting(true);
     try {
-      const response = await axios.post("/api/auth/signup", {
-        name: values.username,
+      const response = await axios.post(`${apiUrl}/auth/signup`, {
+        name: values.name,
         email: values.email,
         dob: values.dob,
         password: values.password,

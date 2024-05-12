@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+
 import { google } from "googleapis";
 
 const oauth2Client = new google.auth.OAuth2(
@@ -10,8 +11,22 @@ oauth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 
 const sendEmail = async (email, subject, text) => {
   try {
-    const accessToken = await oauth2Client.getAccessToken();
-
+    // const accessToken = await oauth2Client.getAccessToken();
+    // const mailTransport = nodemailer.createTransport({
+    //   host: "smtpout.secureserver.net",
+    //   secure: true,
+    //   secureConnection: false,
+    //   tls: {
+    //     ciphers: "SSLv3",
+    //   },
+    //   requireTLS: true,
+    //   port: 465,
+    //   debug: true,
+    //   auth: {
+    //     user: process.env.GODADDY_EMAIL,
+    //     pass: process.env.GODADDY_PASSWORD,
+    //   },
+    // });
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {

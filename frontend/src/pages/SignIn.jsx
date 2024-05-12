@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 const SignIn = () => {
-  const { signIn } = useApp();
+  const { signIn, apiUrl } = useApp();
   const initialValues = {
     userIdentifier: "",
     password: "",
@@ -41,7 +41,7 @@ const SignIn = () => {
         payload.mobileNumber = values.userIdentifier;
       }
 
-      const response = await axios.post("/auth/signin", payload);
+      const response = await axios.post(`${apiUrl}/auth/signin`, payload);
       const { token, user: userData } = response.data;
 
       signIn(token, userData);

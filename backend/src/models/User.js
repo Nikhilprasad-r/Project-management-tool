@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
   isAdmin: { type: Boolean, default: false },
   role: { type: String, required: true, default: "user", required: true },
   profilePic: { type: String },
-  hourlyRate: { type: Number, required: true },
+  hourlyRate: { type: Number, default: 0 },
   skills: [{ type: String }],
   projects: [
     {

@@ -15,11 +15,10 @@ const corsOptions = {
 
 app.use(cors());
 
-// Connect to database
 connectDB();
 
 // Middleware
-app.use(express.json());
+app.use(express.json(corsOptions));
 
 // Routes
 app.use("/", Routes);
