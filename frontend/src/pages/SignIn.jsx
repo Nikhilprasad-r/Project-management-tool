@@ -3,24 +3,45 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useApp } from "../context/AppContext";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const SignIn = () => {
   const { signIn } = useApp();
   const initialValues = {
-    email: "",
+    userIdentifier: "",
     password: "",
     remember: false,
-    mobileNumber: "",
   };
 
   const validationSchema = Yup.object({
-    email: Yup.string().email("Invalid email address").required("Required"),
-    password: Yup.string().required("No password provided."),
+    userIdentifier: Yup.string()
+      .required("Email or mobile number is required")
+      .test(
+        "is-email-or-mobile",
+        "Enter a valid email or mobile number",
+        (value) =>
+          /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value) ||
+          /^[0-9]+$/g.test(value)
+      ),
+    password: Yup.string().required("Password is required"),
   });
 
   const handleSignIn = async (values, actions) => {
     try {
-      const response = await axios.post("/auth/signin", values);
+      const isEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(
+        values.userIdentifier
+      );
+      const payload = {
+        password: values.password,
+        remember: values.remember,
+      };
+      if (isEmail) {
+        payload.email = values.userIdentifier;
+      } else {
+        payload.mobileNumber = values.userIdentifier;
+      }
+
+      const response = await axios.post("/auth/signin", payload);
       const { token, user: userData } = response.data;
 
       signIn(token, userData);
@@ -30,6 +51,7 @@ const SignIn = () => {
       actions.setSubmitting(false);
     }
   };
+
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -47,40 +69,20 @@ const SignIn = () => {
                 <Form className="space-y-4 md:space-y-6">
                   <div>
                     <label
-                      htmlFor="email"
+                      htmlFor="userIdentifier"
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >
-                      Your email
+                      Email or Mobile Number
                     </label>
                     <Field
-                      type="email"
-                      name="email"
-                      id="email"
+                      type="text"
+                      name="userIdentifier"
+                      id="userIdentifier"
                       className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="name@company.com"
+                      placeholder="name@company.com or 1234567890"
                     />
                     <ErrorMessage
-                      name="email"
-                      component="div"
-                      className="text-red-500 text-xs italic"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="mobileNumber"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Your email
-                    </label>
-                    <Field
-                      type="mobileNumber"
-                      name="mobileNumber"
-                      id="mobileNumber"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="1234567890"
-                    />
-                    <ErrorMessage
-                      name="mobileNumber"
+                      name="userIdentifier"
                       component="div"
                       className="text-red-500 text-xs italic"
                     />

@@ -9,36 +9,33 @@ const TeamLeaderPanel = () => {
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const fetchProjects = async () => {
-    setIsLoading(true);
-    setError("");
-    try {
-      const result = await axios.get(
-        `${process.env.VITE_API_URL}/api/projects`
-      );
-      setProjects(result.data);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setError("Failed to load projects.");
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (user.role === "tl") {
-      fetchProjects();
-    } else {
+    if (!user || user.role !== "tl") {
       navigate("/");
+      return;
     }
-  }, [user.role, navigate]);
+    const fetchProjects = async () => {
+      try {
+        const result = await axios.get(
+          `${process.env.VITE_API_URL}/api/projects`
+        );
+        setProjects(result.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Failed to load projects.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProjects();
+  }, [user, navigate]);
 
-  const handleProjectSelect = (e) => {
-    setSelectedProjectId(e.target.value);
-  };
+  const handleProjectSelect = (e) => setSelectedProjectId(e.target.value);
+
+  if (!user) return <div>Checking authorization...</div>;
 
   return (
     <div>
@@ -48,7 +45,7 @@ const TeamLeaderPanel = () => {
       {isLoading ? (
         <p>Loading projects...</p>
       ) : error ? (
-        <p>{error}</p>
+        <p className="text-red-500">{error}</p>
       ) : (
         <>
           <select onChange={handleProjectSelect} value={selectedProjectId}>

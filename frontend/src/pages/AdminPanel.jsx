@@ -16,42 +16,32 @@ const AdminPanel = () => {
   const { user } = useApp();
   const navigate = useNavigate();
 
-  const fetchProjects = async () => {
-    try {
-      const result = await axios.get(
-        `${process.env.VITE_API_URL}/admin/projects`
-      );
-      setProjects(result.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const result = await axios.get(`${process.env.VITE_API_URL}/admin/users`);
-      setTeam(result.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
   useEffect(() => {
-    if (user.isAdmin) {
-      fetchProjects();
-      fetchUsers();
-    } else {
+    if (!user || !user.isAdmin) {
       navigate("/");
+      return;
     }
-  }, [navigate, user.isAdmin]);
+    const fetchData = async () => {
+      try {
+        const [projectData, userData] = await Promise.all([
+          axios.get(`${process.env.VITE_API_URL}/admin/projects`),
+          axios.get(`${process.env.VITE_API_URL}/admin/users`),
+        ]);
+        setProjects(projectData.data);
+        setTeam(userData.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [navigate, user]);
 
-  const handleProjectSelect = (e) => {
-    setSelectedProjectId(e.target.value);
-  };
+  const handleProjectSelect = (e) => setSelectedProjectId(e.target.value);
+  const handleUserSelect = (e) => setSelectedUserId(e.target.value);
 
-  const handleUserSelect = (e) => {
-    setSelectedUserId(e.target.value);
-  };
+  if (!user || !user.isAdmin) {
+    return <div>Not authorized</div>;
+  }
 
   return (
     <div>

@@ -8,31 +8,39 @@ import Sidebar from "../ui/Sidebar";
 const DeveloperPanel = () => {
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { user } = useApp();
   const navigate = useNavigate();
 
-  const fetchTasks = async () => {
-    try {
-      const result = await axios.get(
-        `${process.env.VITE_API_URL}/api/tasks/user/${user._id}`
-      );
-      setTasks(result.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
   useEffect(() => {
-    if (user) {
-      fetchTasks();
-    } else {
+    if (!user) {
       navigate("/");
+      return;
     }
+    const fetchTasks = async () => {
+      setLoading(true);
+      try {
+        const result = await axios.get(
+          `${process.env.VITE_API_URL}/api/tasks/user/${user._id}`
+        );
+        setTasks(result.data);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Failed to load tasks.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTasks();
   }, [user, navigate]);
 
   const handleTaskSelect = (e) => {
     setSelectedTaskId(e.target.value);
   };
+
+  if (!user) return <div>Redirecting...</div>;
 
   return (
     <div>
@@ -42,14 +50,20 @@ const DeveloperPanel = () => {
           Hello Developer, {user.name}
         </h1>
         <h2 className="text-lg font-bold">Tasks</h2>
-        <select onChange={handleTaskSelect} value={selectedTaskId}>
-          <option value="">Select a task</option>
-          {tasks.map((task) => (
-            <option key={task._id} value={task._id}>
-              {task.taskName}
-            </option>
-          ))}
-        </select>
+        {loading ? (
+          <p>Loading tasks...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <select onChange={handleTaskSelect} value={selectedTaskId}>
+            <option value="">Select a task</option>
+            {tasks.map((task) => (
+              <option key={task._id} value={task._id}>
+                {task.taskName}
+              </option>
+            ))}
+          </select>
+        )}
         {selectedTaskId && (
           <TaskDetails
             task={tasks.find((task) => task._id === selectedTaskId)}
