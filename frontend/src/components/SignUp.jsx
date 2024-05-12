@@ -6,15 +6,16 @@ import { useApp } from "../context/AppContext";
 
 const SignUp = () => {
   const initialValues = {
-    username: "",
+    name: "",
     dob: "",
     email: "",
     password: "",
     confirmPassword: "",
+    mobileNumber: "",
   };
 
   const validationSchema = Yup.object({
-    username: Yup.string().required("Required"),
+    name: Yup.string().required("Required"),
     dob: Yup.date().required("Required"),
     email: Yup.string().email("Invalid email format").required("Required"),
     password: Yup.string()
@@ -23,6 +24,7 @@ const SignUp = () => {
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Passwords must match")
       .required("Required"),
+    mobileNumber: Yup.string().required("Mobile number is required"),
   });
 
   const onSubmit = async (values, { setSubmitting, resetForm }) => {
@@ -33,6 +35,7 @@ const SignUp = () => {
         email: values.email,
         dob: values.dob,
         password: values.password,
+        mobileNumber: values.mobileNumber,
       });
       alert("Signup successful!");
       resetForm();
@@ -51,23 +54,15 @@ const SignUp = () => {
           onSubmit={onSubmit}
         >
           <Form className="w-full max-w-md">
-            <div className="flex justify-center mx-auto mb-6">
-              <img
-                className="w-auto h-7 sm:h-8"
-                src="https://merakiui.com/images/logo.svg"
-                alt="Meraki Logo"
-              />
-            </div>
-
             <div className="relative flex items-center mb-6">
               <Field
                 type="text"
-                name="username"
+                name="name"
                 className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-                placeholder="Username"
+                placeholder="Full Name"
               />
               <ErrorMessage
-                name="username"
+                name="name"
                 component="div"
                 className="text-red-500 text-xs italic"
               />
@@ -100,7 +95,19 @@ const SignUp = () => {
                 className="text-red-500 text-xs italic"
               />
             </div>
-
+            <div className="relative flex items-center mb-6">
+              <Field
+                type="mobileNumber"
+                name="mobileNumber"
+                className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                placeholder="Phone Number"
+              />
+              <ErrorMessage
+                name="mobileNumber"
+                component="div"
+                className="text-red-500 text-xs italic"
+              />
+            </div>
             <div className="relative flex items-center mb-4">
               <Field
                 type="password"

@@ -41,59 +41,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const fetchProjects = async () => {
-    if (!isAuthenticated) return;
-    try {
-      const response = await axios.get(`${apiUrl}/api/projects`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      setProjects(response.data);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  };
-
-  const fetchTasks = async () => {
-    if (!isAuthenticated) return;
-    try {
-      const response = await axios.get(`${apiUrl}/api/tasks`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      setTasks(response.data);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
-
-  const createProject = async (projectData) => {
-    if (!isAuthenticated) return;
-    try {
-      const response = await axios.post(`${apiUrl}/api/projects`, projectData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      setProjects([...projects, response.data]);
-    } catch (error) {
-      console.error("Error creating project:", error);
-    }
-  };
-
-  const createTask = async (taskData) => {
-    if (!isAuthenticated) return;
-    try {
-      const response = await axios.post(`${apiUrl}/api/tasks`, taskData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      setTasks([...tasks, response.data]);
-    } catch (error) {
-      console.error("Error creating task:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchProjects();
-    fetchTasks();
-  }, [isAuthenticated]);
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = JSON.parse(localStorage.getItem("user"));
