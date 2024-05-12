@@ -1,15 +1,16 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
-import SignIn from "./components/SignIn";
-import SignUp from "./components/SignUp";
-import AccountActivation from "./components/AccountActivation";
-import ResetPassword from "./components/ResetPassword";
-import NewPassword from "./components/NewPassword";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import AccountActivation from "./pages/AccountActivation";
+import ResetPassword from "./pages/ResetPassword";
+import NewPassword from "./pages/NewPassword";
 import Navbar from "./ui/Navbar";
 import AdminPanel from "./pages/AdminPanel";
 import TeamLeaderPanel from "./pages/TeamLeaderPanel";
 import DeveloperPanel from "./pages/DeveloperPanel";
+import Home from "./pages/Home";
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
         <Navbar />
 
         <Routes>
-          <Route path="/" element={<SignIn />} />
+          <Route path="/" element={<Home />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/activate/:token" element={<AccountActivation />} />
