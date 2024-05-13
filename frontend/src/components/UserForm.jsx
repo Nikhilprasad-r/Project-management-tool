@@ -3,6 +3,7 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import * as yup from "yup";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useApp } from "../context/AppContext";
 const validationSchema = yup.object({
   name: yup.string().required("Name is required"),
   email: yup
@@ -32,6 +33,7 @@ const initialValues = {
 };
 
 const UserForm = ({ user = initialValues }) => {
+  const { apiUrl } = useApp();
   const deleteUser = async (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -42,7 +44,7 @@ const UserForm = ({ user = initialValues }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`/api/users/${id}`);
+          const response = await axios.delete(`${apiUrl}/api/users/${id}`);
           const data = await response.json();
           Swal.fire({
             icon: "success",
@@ -65,7 +67,7 @@ const UserForm = ({ user = initialValues }) => {
   const onSubmit = async (values) => {
     try {
       if (user) {
-        const response = await axios.put(`/api/users/${user._id}`, {
+        const response = await axios.put(`${apiUrl}/api/users/${user._id}`, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -79,7 +81,7 @@ const UserForm = ({ user = initialValues }) => {
           timer: 1500,
         });
       } else {
-        const response = await axios.post("/api/users", {
+        const response = await axios.post(`${apiUrl}/api/users`, {
           headers: {
             "Content-Type": "application/json",
           },

@@ -3,6 +3,8 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import * as yup from "yup";
 import Swal from "sweetalert2";
 import TaskDetails from "./TaskDetails";
+import axios from "axios";
+import { useApp } from "../context/AppContext";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -54,10 +56,11 @@ const ProjectForm = ({ project = initialValues }) => {
   const [newComment, setNewComment] = useState("");
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState("");
+  const { apiUrl } = useApp();
   const fetchTasks = async () => {
     try {
       const result = await axios.get(
-        `${process.env.VITE_API_URL}/api/tasks/project/${project._id}`
+        `${apiUrl}/api/tasks/project/${project._id}`
       );
       setTasks(result.data);
     } catch (error) {
