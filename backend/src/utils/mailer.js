@@ -11,7 +11,7 @@ oauth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 
 const sendEmail = async (email, subject, text) => {
   try {
-    // const accessToken = await oauth2Client.getAccessToken();
+    const accessToken = await oauth2Client.getAccessToken();
     // const mailTransport = nodemailer.createTransport({
     //   host: "smtpout.secureserver.net",
     //   secure: true,
