@@ -111,7 +111,7 @@ const UserForm = ({ user = initialValues }) => {
       enableReinitialize
     >
       {({ values, setFieldValue }) => (
-        <Form className="space-y-4">
+        <Form className=" ml-[30%] space-y-4 flex flex-col max-w-[500px]">
           <Field name="name" className="input" placeholder="Name" />
           <Field
             name="email"

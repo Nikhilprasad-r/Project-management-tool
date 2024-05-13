@@ -11,8 +11,7 @@ const AdminPanel = () => {
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [team, setTeam] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState("");
-  const [creatingUser, setCreatingUser] = useState(false);
-  const [creatingProject, setCreatingProject] = useState(false);
+
   const { user } = useApp();
   const navigate = useNavigate();
 
@@ -50,13 +49,6 @@ const AdminPanel = () => {
         <h1 className="text-xl font-bold text-center my-6">
           Hello Admin, {user.name}
         </h1>
-        <button
-          onClick={() => setCreatingProject(true)}
-          className="btn-primary"
-        >
-          Create New Project
-        </button>
-        {creatingProject && <ProjectForm />}
 
         <h2 className="text-lg font-bold">Projects</h2>
         <select onChange={handleProjectSelect} value={selectedProjectId}>
