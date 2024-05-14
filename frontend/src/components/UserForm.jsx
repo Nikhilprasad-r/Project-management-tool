@@ -5,6 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useApp } from "../context/AppContext";
 import { IoClose } from "react-icons/io5";
+
 const validationSchema = yup.object({
   name: yup.string().required("Name is required"),
   email: yup
@@ -34,7 +35,8 @@ const initialValues = {
 };
 
 const UserForm = ({ user = initialValues }) => {
-  const { apiUrl, setFormMode } = useApp();
+  const { apiUrl, setFormMode, token } = useApp();
+
   const deleteUser = async (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -45,8 +47,9 @@ const UserForm = ({ user = initialValues }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`${apiUrl}/api/users/${id}`);
-          const data = await response.json();
+          await axios.delete(`${apiUrl}/admin/user/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
           Swal.fire({
             icon: "success",
             title: "User deleted",
@@ -73,14 +76,15 @@ const UserForm = ({ user = initialValues }) => {
 
   const onSubmit = async (values) => {
     try {
-      if (user) {
-        const response = await axios.put(`${apiUrl}/api/users/${user._id}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        });
-        const data = await response.json();
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      if (user._id) {
+        await axios.put(`${apiUrl}/admin/user/${user._id}`, values, config);
         Swal.fire({
           icon: "success",
           title: "User updated successfully",
@@ -88,13 +92,7 @@ const UserForm = ({ user = initialValues }) => {
           timer: 1500,
         });
       } else {
-        const response = await axios.post(`${apiUrl}/api/users`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        });
-        const data = await response.json();
+        await axios.post(`${apiUrl}/admin/create-user`, values, config);
         Swal.fire({
           icon: "success",
           title: "User created",
@@ -119,8 +117,8 @@ const UserForm = ({ user = initialValues }) => {
       onSubmit={onSubmit}
       enableReinitialize
     >
-      {({ values, setFieldValue }) => (
-        <Form className=" ml-[30%] space-y-4 flex flex-col max-w-[500px]">
+      {({ values, setFieldValue, resetForm }) => (
+        <Form className="space-y-4 max-w-[700px] mx-auto mt-20 rounded-2xl bg-slate-500 p-8">
           <div className="flex justify-end">
             <IoClose
               onClick={() => handleClose(resetForm)}
@@ -140,7 +138,6 @@ const UserForm = ({ user = initialValues }) => {
             placeholder="Mobile Number"
           />
           <Field name="dob" type="date" className="input" />
-
           <Field name="role" as="select" className="select">
             <option value="fed">Front End Developer</option>
             <option value="bed">Back End Developer</option>
@@ -188,9 +185,20 @@ const UserForm = ({ user = initialValues }) => {
               </>
             )}
           </FieldArray>
-          <button type="submit" className="btn-submit">
-            Save User
-          </button>
+          <div className="flex justify-between">
+            <button type="submit" className="btn-submit">
+              Save User
+            </button>
+            {user._id && (
+              <button
+                type="button"
+                onClick={() => deleteUser(user._id)}
+                className="btn-delete"
+              >
+                Delete
+              </button>
+            )}
+          </div>
         </Form>
       )}
     </Formik>

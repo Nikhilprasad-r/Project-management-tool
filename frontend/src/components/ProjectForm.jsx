@@ -36,7 +36,6 @@ const validationSchema = yup.object({
   ),
 });
 
-// Initial values for a new project
 const initialValues = {
   title: "",
   description: "",
@@ -57,17 +56,22 @@ const ProjectForm = ({ project = initialValues }) => {
   const [newComment, setNewComment] = useState("");
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState("");
-  const { apiUrl, formMode, setFormMode } = useApp();
+  const { apiUrl, formMode, setFormMode, token } = useApp();
+
   const fetchTasks = async () => {
     try {
       const result = await axios.get(
-        `${apiUrl}/api/tasks/project/${project._id}`
+        `${apiUrl}/api/tasks/project/${project._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       setTasks(result.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
   const handleTaskSelect = (e) => {
     setSelectedTaskId(e.target.value);
     setFormMode("task");
@@ -90,9 +94,9 @@ const ProjectForm = ({ project = initialValues }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`${apiUrl}/api/project/${id}`, {
+          await axios.delete(`${apiUrl}/api/project/${id}`, {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${token}`,
             },
           });
           Swal.fire("Project deleted successfully!", "", "success");
@@ -106,21 +110,17 @@ const ProjectForm = ({ project = initialValues }) => {
 
   const onSubmit = async (values) => {
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
       if (project._id) {
-        const response = await axios.put(
-          `${apiUrl}/api/project/${project._id}`,
-          values,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        await axios.put(`${apiUrl}/api/project/${project._id}`, values, config);
         Swal.fire("Project updated successfully!", "", "success");
       } else {
-        const response = await axios.post(`${apiUrl}/api/project`, values, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        await axios.post(`${apiUrl}/api/project`, values, config);
         Swal.fire("Project created successfully!", "", "success");
       }
     } catch (error) {
@@ -128,16 +128,18 @@ const ProjectForm = ({ project = initialValues }) => {
       Swal.fire("Failed to update project.", "", "error");
     }
   };
+
   const handleAddComment = (arrayHelpers) => {
     if (newComment) {
       arrayHelpers.push({
         comment: newComment,
-        commentedBy: "currentUserId",
+        commentedBy: "currentUserId", // Replace with actual user ID
         commentedAt: new Date(),
       });
       setNewComment("");
     }
   };
+
   const handleClose = (resetForm) => {
     setFormMode("closed");
     setSelectedTaskId("");
@@ -145,7 +147,7 @@ const ProjectForm = ({ project = initialValues }) => {
   };
 
   return (
-    <div>
+    <div className="space-y-4 max-w-[700px] mx-auto mt-20 rounded-2xl bg-slate-500 p-8">
       <div className="flex justify-end">
         <IoClose
           onClick={() => handleClose(resetForm)}
@@ -158,8 +160,8 @@ const ProjectForm = ({ project = initialValues }) => {
         onSubmit={onSubmit}
         enableReinitialize
       >
-        {({ values, handleChange, setFieldValue }) => (
-          <Form className="space-y-4 max-w-[700px] mx-auto mt-12 rounded-2xl bg-slate-500 p-8">
+        {({ values, handleChange, setFieldValue, resetForm }) => (
+          <Form>
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Title
@@ -371,13 +373,9 @@ const ProjectForm = ({ project = initialValues }) => {
           </option>
         ))}
       </select>
-      {selectedTaskId &&
-        formMode ===
-          "task"(
-            <TaskDetails
-              task={tasks.find((task) => task._id === selectedTaskId)}
-            />
-          )}
+      {selectedTaskId && formMode === "task" && (
+        <TaskDetails task={tasks.find((task) => task._id === selectedTaskId)} />
+      )}
     </div>
   );
 };

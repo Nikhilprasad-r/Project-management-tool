@@ -42,9 +42,9 @@ const SignIn = () => {
       }
 
       const response = await axios.post(`${apiUrl}/auth/signin`, payload);
-      const { token, user: userData } = response.data;
-
-      signIn(token, userData);
+      const { token, user } = response.data;
+      console.log("token", user);
+      signIn(token, user);
       actions.setSubmitting(false);
     } catch (error) {
       console.error("Sign in error:", error);

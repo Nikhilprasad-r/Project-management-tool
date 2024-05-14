@@ -23,7 +23,7 @@ export const signUp = async (req, res) => {
       mobileNumber,
       dob,
       password,
-      isadmin: true,
+      isAdmin: true,
       profilePic,
     });
 
@@ -187,7 +187,8 @@ export const signIn = async (req, res) => {
   }
 };
 export const createUser = async (req, res) => {
-  const { name, email, mobileNumber, skills, hourlyRate } = req.body;
+  const { name, email, mobileNumber, skills, hourlyRate, dob } = req.body;
+  console.log(req.body);
   try {
     let user = await User.findOne({ email });
     if (user) {
@@ -198,13 +199,14 @@ export const createUser = async (req, res) => {
       name,
       email,
       mobileNumber,
+      dob,
       skills,
       hourlyRate,
       password: password,
       isActive: true,
     });
     await user.save();
-    sendWelcomeEmail(email, password);
+    await sendWelcomeEmail(email, password);
     res.status(201).json(user);
   } catch (err) {
     console.error(err.message);

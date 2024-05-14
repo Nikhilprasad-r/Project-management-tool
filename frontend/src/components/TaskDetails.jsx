@@ -36,20 +36,23 @@ const initialValues = {
 };
 
 const TaskDetails = ({ task = initialValues }) => {
-  const { user, apiUrl, formMode, setFormMode } = useApp();
-  const [editable, setEditable] = useState(false);
+  const { user, apiUrl, formMode, setFormMode, token } = useApp();
+  const [editable, setEditable] = useState(
+    user.role === "tl" || user.role === "admin"
+  );
   const [newComment, setNewComment] = useState("");
 
   const handleAddComment = (arrayHelpers) => {
     if (newComment) {
       arrayHelpers.push({
         comment: newComment,
-        commentedBy: "currentUserId",
+        commentedBy: user._id, // Replace with actual user ID
         commentedAt: new Date(),
       });
       setNewComment("");
     }
   };
+
   const handleClose = (resetForm) => {
     setFormMode("closed");
     resetForm();
@@ -66,9 +69,9 @@ const TaskDetails = ({ task = initialValues }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`${apiUrl}/api/task/${id}`, {
+          await axios.delete(`${apiUrl}/api/task/${id}`, {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${token}`,
             },
           });
           setFormMode("closed");
@@ -84,27 +87,22 @@ const TaskDetails = ({ task = initialValues }) => {
   const handleSubmit = async (values, actions) => {
     actions.setSubmitting(true);
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
       if (task._id) {
-        const response = await axios.put(
-          `${apiUrl}/api/task/${task._id}`,
-          values,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        await axios.put(`${apiUrl}/api/task/${task._id}`, values, config);
         Swal.fire("Task updated successfully!", "", "success");
         actions.resetForm();
         setFormMode("closed");
       } else {
-        const response = await axios.post(`${apiUrl}/api/task`, values, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        await axios.post(`${apiUrl}/api/task`, values, config);
         Swal.fire("Task created successfully!", "", "success");
         actions.resetForm();
       }
-      setFormMode("closed");
     } catch (error) {
       console.error("Error updating task:", error);
       Swal.fire("Failed to update task", "", "error");
@@ -112,10 +110,6 @@ const TaskDetails = ({ task = initialValues }) => {
       actions.setSubmitting(false);
     }
   };
-
-  if (user.role === "tl" || user.role === "admin") {
-    setEditable(true);
-  }
 
   return (
     <div>

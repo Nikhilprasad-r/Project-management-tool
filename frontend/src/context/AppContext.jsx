@@ -5,9 +5,12 @@ import { useNavigate } from "react-router-dom";
 const AppContext = createContext({
   isAuthenticated: false,
   user: null,
+  token: null,
   signIn: () => {},
   signOut: () => {},
   apiUrl: "",
+  formMode: "",
+  setFormMode: () => {},
 });
 
 export const useApp = () => useContext(AppContext);
@@ -19,7 +22,8 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(() =>
     JSON.parse(localStorage.getItem("user"))
   );
-  const [formMode, setFormMode] = useState();
+  const [formMode, setFormMode] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("token"));
   const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
@@ -28,6 +32,7 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(userData));
     setIsAuthenticated(true);
     setUser(userData);
+    setToken(token);
 
     if (userData.isadmin) {
       navigate("/admin");
@@ -43,6 +48,7 @@ export const AppProvider = ({ children }) => {
     localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUser(null);
+    setToken(null);
     navigate("/");
   };
 
@@ -66,6 +72,7 @@ export const AppProvider = ({ children }) => {
       });
     }
   }, [user]);
+
   useEffect(() => {
     const syncLogout = (event) => {
       if (event.key === "token" && !event.newValue) {
@@ -82,6 +89,7 @@ export const AppProvider = ({ children }) => {
       value={{
         isAuthenticated,
         user,
+        token,
         signIn,
         signOut,
         apiUrl,

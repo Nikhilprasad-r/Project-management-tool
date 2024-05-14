@@ -53,7 +53,7 @@ const AdminPanel = () => {
   return (
     <div>
       <Sidebar />
-      <div className="container mx-auto px-4">
+      <div className="container ml-[20%] px-4">
         <h1 className="text-xl font-bold text-center my-6">
           Hello Admin, {user.name}
         </h1>
@@ -72,18 +72,6 @@ const AdminPanel = () => {
             project={projects.find((p) => p._id === selectedProjectId)}
           />
         )}
-
-        <button
-          onClick={() => {
-            setSelectedProjectId("");
-            setSelectedUserId("");
-            setFormMode("user");
-          }}
-          className="btn-primary mt-4"
-        >
-          Create New User
-        </button>
-        {formMode === "user" && !selectedUserId && <UserForm />}
 
         <h2 className="text-lg font-bold mt-6">Team Members</h2>
         <select onChange={handleUserSelect} value={selectedUserId}>

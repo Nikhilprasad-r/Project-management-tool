@@ -11,25 +11,26 @@ const TeamLeaderPanel = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const fetchProjects = async () => {
+    try {
+      const result = await axios.get(
+        `${process.env.VITE_API_URL}/api/projects`
+      );
+      setProjects(result.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setError("Failed to load projects.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!user || user.role !== "tl") {
       navigate("/");
       return;
     }
-    const fetchProjects = async () => {
-      try {
-        const result = await axios.get(
-          `${process.env.VITE_API_URL}/api/projects`
-        );
-        setProjects(result.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError("Failed to load projects.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+
     fetchProjects();
   }, [user, navigate]);
 
