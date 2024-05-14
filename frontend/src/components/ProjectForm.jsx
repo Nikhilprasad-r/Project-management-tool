@@ -50,6 +50,7 @@ const initialValues = {
   status: "pending",
   cost: 0,
   comments: [],
+  tasks: [],
 };
 
 const ProjectForm = ({ project = initialValues }) => {
@@ -133,7 +134,7 @@ const ProjectForm = ({ project = initialValues }) => {
     if (newComment) {
       arrayHelpers.push({
         comment: newComment,
-        commentedBy: "currentUserId", // Replace with actual user ID
+        commentedBy: "currentUserId",
         commentedAt: new Date(),
       });
       setNewComment("");
@@ -147,235 +148,189 @@ const ProjectForm = ({ project = initialValues }) => {
   };
 
   return (
-    <div className="space-y-4 max-w-[700px] mx-auto mt-20 rounded-2xl bg-slate-500 p-8">
-      <div className="flex justify-end">
-        <IoClose
-          onClick={() => handleClose(resetForm)}
-          className="cursor-pointer"
-        />
-      </div>
+    <div
+      className={`fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/70`}
+    >
       <Formik
         initialValues={project || initialValues}
         validationSchema={validationSchema}
         onSubmit={onSubmit}
         enableReinitialize
       >
-        {({ values, handleChange, setFieldValue, resetForm }) => (
-          <Form>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Title
-              </label>
-              <Field
-                name="title"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        {({ values, setFieldValue, resetForm }) => (
+          <Form className="max-w-auto mx-auto bg-gray-700 p-5 rounded-lg">
+            <div className="flex justify-end py-3 text-red-600 text-2xl">
+              <IoClose
+                onClick={() => handleClose(resetForm)}
+                className="cursor-pointer"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <Field
-                as="textarea"
-                name="description"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                rows="3"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Category
-              </label>
-              <Field
-                as="select"
-                name="category"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              >
-                <option value="">Select a category</option>
-                <option value="Software Development">
-                  Software Development
-                </option>
-                <option value="Research">Research</option>
-                <option value="Marketing Project">Marketing Project</option>
-              </Field>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Deadline
-              </label>
-              <Field
-                type="date"
-                name="deadlines"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Technologies
-              </label>
-              <FieldArray name="technologies">
-                {({ push, remove, form }) => (
-                  <>
-                    {form.values.technologies.map((technology, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <Field
-                          name={`technologies.${index}`}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => remove(index)}
-                          className="mt-1 px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600"
+            <div className="flex justify-between gap-x-5">
+              <div>
+                <Field name="title" className="input" placeholder="Title" />
+                <Field
+                  name="description"
+                  as="textarea"
+                  className="input"
+                  placeholder="Description"
+                />
+                <Field name="category" as="select" className="input">
+                  <option value="">Select a category</option>
+                  <option value="Software Development">
+                    Software Development
+                  </option>
+                  <option value="Research">Research</option>
+                  <option value="Marketing Project">Marketing Project</option>
+                </Field>
+                <Field
+                  name="deadlines"
+                  type="date"
+                  className="input"
+                  placeholder="Deadline"
+                />
+                <FieldArray name="technologies">
+                  {({ push, remove, form }) => (
+                    <>
+                      {form.values.technologies.map((technology, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2"
                         >
-                          Remove
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => push("")}
-                      className="mt-2 px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
-                    >
-                      Add Technology
+                          <Field
+                            name={`technologies.${index}`}
+                            className="input"
+                            placeholder="Technology"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => remove(index)}
+                            className="btn-remove"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => push("")}
+                        className="btn-add"
+                      >
+                        Add Technology
+                      </button>
+                    </>
+                  )}
+                </FieldArray>
+                <Field
+                  name="totalManDays"
+                  type="number"
+                  className="input"
+                  placeholder="Total Man Days"
+                />
+                <Field
+                  name="deploymentUrl"
+                  type="url"
+                  className="input"
+                  placeholder="Deployment URL"
+                />
+              </div>
+              <div>
+                <Field
+                  name="codebaseUrl"
+                  type="url"
+                  className="input"
+                  placeholder="Codebase URL"
+                />
+                <Field
+                  name="totalMarks"
+                  type="number"
+                  className="input"
+                  placeholder="Total Marks"
+                />
+                <Field name="evaluation" as="select" className="input">
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                  <option value="excellent">Excellent</option>
+                </Field>
+                <Field name="status" as="select" className="input">
+                  <option value="pending">Pending</option>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                </Field>
+                <Field
+                  name="cost"
+                  type="number"
+                  className="input"
+                  placeholder="Cost"
+                />
+                <select
+                  onChange={handleTaskSelect}
+                  value={selectedTaskId}
+                  className="input"
+                >
+                  <option value="">Select a task</option>
+                  {project._id ? (
+                    project.tasks.map((task) => (
+                      <option key={task._id} value={task._id}>
+                        {task.taskName}
+                      </option>
+                    ))
+                  ) : (
+                    <button onClick={() => setFormMode("task")}>
+                      create task
                     </button>
-                  </>
+                  )}
+                </select>
+                {selectedTaskId && formMode === "task" && (
+                  <TaskDetails
+                    task={tasks.find((task) => task._id === selectedTaskId)}
+                  />
                 )}
-              </FieldArray>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Total Man Days
-              </label>
-              <Field
-                type="number"
-                name="totalManDays"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
+            <FieldArray name="comments">
+              {({ push, form }) => (
+                <>
+                  {form.values.comments.map((comment, index) => (
+                    <div key={index} className="bg-gray-100 rounded p-2 mb-2">
+                      <p className="text-sm text-gray-800">{comment.comment}</p>
+                      <p className="text-sm text-gray-600">
+                        {new Date(comment.commentedAt).toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                  <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="input"
+                    placeholder="Add Comment"
+                    rows="2"
+                  ></textarea>
+                  <button
+                    type="button"
+                    onClick={() => handleAddComment(push)}
+                    className="btn-add"
+                  >
+                    Add Comment
+                  </button>
+                </>
+              )}
+            </FieldArray>
+            <div className="flex gap-4 p-4">
+              <button type="submit" className="btn-submit">
+                Save Changes
+              </button>
+              {!project._id && (
+                <button
+                  onClick={() => deleteProject(project._id)}
+                  className="btn-delete"
+                >
+                  Delete Project
+                </button>
+              )}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Deployment URL
-              </label>
-              <Field
-                type="url"
-                name="deploymentUrl"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Codebase URL
-              </label>
-              <Field
-                type="url"
-                name="codebaseUrl"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Total Marks
-              </label>
-              <Field
-                type="number"
-                name="totalMarks"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Evaluation
-              </label>
-              <Field
-                as="select"
-                name="evaluation"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              >
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-                <option value="excellent">Excellent</option>
-              </Field>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Status
-              </label>
-              <Field
-                as="select"
-                name="status"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              >
-                <option value="pending">Pending</option>
-                <option value="active">Active</option>
-                <option value="completed">Completed</option>
-              </Field>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Cost
-              </label>
-              <Field
-                type="number"
-                name="cost"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Comments
-              </label>
-              <FieldArray name="comments">
-                {({ push, form }) => (
-                  <>
-                    {form.values.comments.map((comment, index) => (
-                      <div key={index} className="bg-gray-100 rounded p-2 mb-2">
-                        <p className="text-sm text-gray-800">
-                          {comment.comment}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {new Date(comment.commentedAt).toLocaleString()}
-                        </p>
-                      </div>
-                    ))}
-                    <textarea
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                      rows="2"
-                    ></textarea>
-                    <button
-                      type="button"
-                      onClick={() => handleAddComment(push)}
-                      className="mt-2 px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
-                    >
-                      Add Comment
-                    </button>
-                  </>
-                )}
-              </FieldArray>
-            </div>
-
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600"
-            >
-              Save Changes
-            </button>
           </Form>
         )}
       </Formik>
-      <h2>Select a Task</h2>
-      <select onChange={handleTaskSelect} value={selectedTaskId}>
-        <option value="">Select a task</option>
-        {tasks.map((task) => (
-          <option key={task._id} value={task._id}>
-            {task.taskName}
-          </option>
-        ))}
-      </select>
-      {selectedTaskId && formMode === "task" && (
-        <TaskDetails task={tasks.find((task) => task._id === selectedTaskId)} />
-      )}
     </div>
   );
 };

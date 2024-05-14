@@ -42,14 +42,14 @@ const TeamLeaderPanel = () => {
   if (!user) return <div>Checking authorization...</div>;
 
   return (
-    <div>
+    <div className="ml-[30%]">
       <h1>Team Leader Panel</h1>
 
       <h2 className="text-lg font-bold">Projects</h2>
       {isLoading ? (
         <p>Loading projects...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
+      ) : error || projects ? (
+        <p className="text-red-500">No projects found</p>
       ) : (
         <>
           <select onChange={handleProjectSelect} value={selectedProjectId}>

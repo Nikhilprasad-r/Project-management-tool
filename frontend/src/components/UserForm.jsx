@@ -111,97 +111,101 @@ const UserForm = ({ user = initialValues }) => {
   };
 
   return (
-    <Formik
-      initialValues={user || initialValues}
-      validationSchema={validationSchema}
-      onSubmit={onSubmit}
-      enableReinitialize
+    <div
+      className={`fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/70`}
     >
-      {({ values, setFieldValue, resetForm }) => (
-        <Form className="space-y-4 max-w-[700px] mx-auto mt-20 rounded-2xl bg-slate-500 p-8">
-          <div className="flex justify-end">
-            <IoClose
-              onClick={() => handleClose(resetForm)}
-              className="cursor-pointer"
+      <Formik
+        initialValues={user || initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+        enableReinitialize
+      >
+        {({ values, setFieldValue, resetForm }) => (
+          <Form className="max-w-[40%] mx-auto bg-gray-700 p-5 rounded-lg">
+            <div className="flex justify-end py-3 text-red-600 text-2xl">
+              <IoClose
+                onClick={() => handleClose(resetForm)}
+                className="cursor-pointer"
+              />
+            </div>
+            <Field name="name" className="input" placeholder="Name" />
+            <Field
+              name="email"
+              type="email"
+              className="input"
+              placeholder="Email"
             />
-          </div>
-          <Field name="name" className="input" placeholder="Name" />
-          <Field
-            name="email"
-            type="email"
-            className="input"
-            placeholder="Email"
-          />
-          <Field
-            name="mobileNumber"
-            className="input"
-            placeholder="Mobile Number"
-          />
-          <Field name="dob" type="date" className="input" />
-          <Field name="role" as="select" className="select">
-            <option value="fed">Front End Developer</option>
-            <option value="bed">Back End Developer</option>
-            <option value="ds">Devops</option>
-            <option value="tl">Team Leader</option>
-          </Field>
-          <Field
-            name="profilePic"
-            type="url"
-            className="input"
-            placeholder="Profile Picture URL"
-          />
-          <Field
-            name="hourlyRate"
-            type="number"
-            className="input"
-            placeholder="Hourly Rate"
-          />
-          <FieldArray name="skills">
-            {({ push, remove, form }) => (
-              <>
-                {form.values.skills.map((skill, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <Field
-                      name={`skills.${index}`}
-                      className="input flex-1"
-                      placeholder="Skill"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="btn-remove"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
+            <Field
+              name="mobileNumber"
+              className="input"
+              placeholder="Mobile Number"
+            />
+            <Field name="dob" type="date" className="input" />
+            <Field name="role" as="select" className="input">
+              <option value="fed">Front End Developer</option>
+              <option value="bed">Back End Developer</option>
+              <option value="ds">Devops</option>
+              <option value="tl">Team Leader</option>
+            </Field>
+            <Field
+              name="profilePic"
+              type="url"
+              className="input"
+              placeholder="Profile Picture URL"
+            />
+            <Field
+              name="hourlyRate"
+              type="number"
+              className="input"
+              placeholder="Hourly Rate"
+            />
+            <FieldArray name="skills">
+              {({ push, remove, form }) => (
+                <>
+                  {form.values.skills.map((skill, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <Field
+                        name={`skills.${index}`}
+                        className="input flex-1"
+                        placeholder="Skill"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => remove(index)}
+                        className="btn-remove"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => push("")}
+                    className="btn-add"
+                  >
+                    Add Skill
+                  </button>
+                </>
+              )}
+            </FieldArray>
+            <div className="flex justify-between">
+              <button type="submit" className="btn-submit">
+                Save User
+              </button>
+              {user._id && (
                 <button
                   type="button"
-                  onClick={() => push("")}
-                  className="btn-add"
+                  onClick={() => deleteUser(user._id)}
+                  className="btn-delete"
                 >
-                  Add Skill
+                  Delete
                 </button>
-              </>
-            )}
-          </FieldArray>
-          <div className="flex justify-between">
-            <button type="submit" className="btn-submit">
-              Save User
-            </button>
-            {user._id && (
-              <button
-                type="button"
-                onClick={() => deleteUser(user._id)}
-                className="btn-delete"
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        </Form>
-      )}
-    </Formik>
+              )}
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 };
 
