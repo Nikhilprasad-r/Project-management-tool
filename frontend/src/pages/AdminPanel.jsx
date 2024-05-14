@@ -11,8 +11,7 @@ const AdminPanel = () => {
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [team, setTeam] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState("");
-
-  const { user } = useApp();
+  const { user, formMode, setFormMode } = useApp();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,8 +34,17 @@ const AdminPanel = () => {
     fetchData();
   }, [navigate, user]);
 
-  const handleProjectSelect = (e) => setSelectedProjectId(e.target.value);
-  const handleUserSelect = (e) => setSelectedUserId(e.target.value);
+  const handleProjectSelect = (e) => {
+    setSelectedProjectId(e.target.value);
+    setSelectedUserId(""); // Reset the user selection
+    setFormMode("project");
+  };
+
+  const handleUserSelect = (e) => {
+    setSelectedUserId(e.target.value);
+    setSelectedProjectId(""); // Reset the project selection
+    setFormMode("user");
+  };
 
   if (!user || !user.isAdmin) {
     return <div>Not authorized</div>;
@@ -59,16 +67,23 @@ const AdminPanel = () => {
             </option>
           ))}
         </select>
-        {selectedProjectId && (
+        {formMode === "project" && selectedProjectId && (
           <ProjectForm
             project={projects.find((p) => p._id === selectedProjectId)}
           />
         )}
 
-        <button onClick={() => setCreatingUser(true)} className="btn-primary">
+        <button
+          onClick={() => {
+            setSelectedProjectId("");
+            setSelectedUserId("");
+            setFormMode("user");
+          }}
+          className="btn-primary mt-4"
+        >
           Create New User
         </button>
-        {creatingUser && <UserForm />}
+        {formMode === "user" && !selectedUserId && <UserForm />}
 
         <h2 className="text-lg font-bold mt-6">Team Members</h2>
         <select onChange={handleUserSelect} value={selectedUserId}>
@@ -79,7 +94,7 @@ const AdminPanel = () => {
             </option>
           ))}
         </select>
-        {selectedUserId && (
+        {formMode === "user" && selectedUserId && (
           <UserForm user={team.find((u) => u._id === selectedUserId)} />
         )}
       </div>

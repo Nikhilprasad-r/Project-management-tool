@@ -19,6 +19,7 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(() =>
     JSON.parse(localStorage.getItem("user"))
   );
+  const [formMode, setFormMode] = useState();
   const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
@@ -84,6 +85,8 @@ export const AppProvider = ({ children }) => {
         signIn,
         signOut,
         apiUrl,
+        formMode,
+        setFormMode,
       }}
     >
       {children}

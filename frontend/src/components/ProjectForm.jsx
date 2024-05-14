@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import TaskDetails from "./TaskDetails";
 import axios from "axios";
 import { useApp } from "../context/AppContext";
+import { IoClose } from "react-icons/io5";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -56,7 +57,7 @@ const ProjectForm = ({ project = initialValues }) => {
   const [newComment, setNewComment] = useState("");
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState("");
-  const { apiUrl } = useApp();
+  const { apiUrl, formMode, setFormMode } = useApp();
   const fetchTasks = async () => {
     try {
       const result = await axios.get(
@@ -69,6 +70,7 @@ const ProjectForm = ({ project = initialValues }) => {
   };
   const handleTaskSelect = (e) => {
     setSelectedTaskId(e.target.value);
+    setFormMode("task");
   };
 
   useEffect(() => {
@@ -136,9 +138,20 @@ const ProjectForm = ({ project = initialValues }) => {
       setNewComment("");
     }
   };
+  const handleClose = (resetForm) => {
+    setFormMode("closed");
+    setSelectedTaskId("");
+    resetForm();
+  };
 
   return (
     <div>
+      <div className="flex justify-end">
+        <IoClose
+          onClick={() => handleClose(resetForm)}
+          className="cursor-pointer"
+        />
+      </div>
       <Formik
         initialValues={project || initialValues}
         validationSchema={validationSchema}
@@ -358,9 +371,13 @@ const ProjectForm = ({ project = initialValues }) => {
           </option>
         ))}
       </select>
-      {selectedTaskId && (
-        <TaskDetails task={tasks.find((task) => task._id === selectedTaskId)} />
-      )}
+      {selectedTaskId &&
+        formMode ===
+          "task"(
+            <TaskDetails
+              task={tasks.find((task) => task._id === selectedTaskId)}
+            />
+          )}
     </div>
   );
 };

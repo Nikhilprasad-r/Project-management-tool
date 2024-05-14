@@ -6,6 +6,7 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import * as yup from "yup";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { IoClose } from "react-icons/io5";
 
 const validationSchema = yup.object({
   taskName: yup.string().required("Task name is required"),
@@ -35,7 +36,7 @@ const initialValues = {
 };
 
 const TaskDetails = ({ task = initialValues }) => {
-  const { user, apiUrl } = useApp();
+  const { user, apiUrl, formMode, setFormMode } = useApp();
   const [editable, setEditable] = useState(false);
   const [newComment, setNewComment] = useState("");
 
@@ -48,6 +49,10 @@ const TaskDetails = ({ task = initialValues }) => {
       });
       setNewComment("");
     }
+  };
+  const handleClose = (resetForm) => {
+    setFormMode("closed");
+    resetForm();
   };
 
   const deleteTask = async (id) => {
@@ -66,6 +71,7 @@ const TaskDetails = ({ task = initialValues }) => {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           });
+          setFormMode("closed");
           Swal.fire("Task deleted successfully!", "", "success");
         } catch (error) {
           console.error("Error deleting task:", error);
@@ -76,6 +82,7 @@ const TaskDetails = ({ task = initialValues }) => {
   };
 
   const handleSubmit = async (values, actions) => {
+    actions.setSubmitting(true);
     try {
       if (task._id) {
         const response = await axios.put(
@@ -89,6 +96,7 @@ const TaskDetails = ({ task = initialValues }) => {
         );
         Swal.fire("Task updated successfully!", "", "success");
         actions.resetForm();
+        setFormMode("closed");
       } else {
         const response = await axios.post(`${apiUrl}/api/task`, values, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -96,9 +104,12 @@ const TaskDetails = ({ task = initialValues }) => {
         Swal.fire("Task created successfully!", "", "success");
         actions.resetForm();
       }
+      setFormMode("closed");
     } catch (error) {
       console.error("Error updating task:", error);
       Swal.fire("Failed to update task", "", "error");
+    } finally {
+      actions.setSubmitting(false);
     }
   };
 
@@ -107,135 +118,146 @@ const TaskDetails = ({ task = initialValues }) => {
   }
 
   return (
-    <Formik
-      initialValues={task || initialValues}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-      enableReinitialize
-    >
-      {({ values, handleChange, setFieldValue, resetForm }) => (
-        <Form className="space-y-4 max-w-[700px] mx-auto mt-12 rounded-2xl bg-slate-500 p-8">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Task Name
-            </label>
-            <Field
-              name="taskName"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Description
-            </label>
-            <Field
-              name="description"
-              as="textarea"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              rows="4"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Deadline
-            </label>
-            <Field
-              type="date"
-              name="deadline"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Category
-            </label>
-            <Field
-              as="select"
-              name="category"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="">Select a category</option>
-              <option value="frontend">Front End</option>
-              <option value="backend">Back End</option>
-              <option value="devops">Devops</option>
-            </Field>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Status
-            </label>
-            <Field
-              as="select"
-              name="status"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="pending">Pending</option>
-              <option value="in progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </Field>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Cost
-            </label>
-            <Field
-              type="number"
-              name="cost"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
+    <div>
+      <div className="flex justify-end">
+        <IoClose
+          onClick={() => handleClose(resetForm)}
+          className="cursor-pointer"
+        />
+      </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Comments
-            </label>
-            <FieldArray name="comments">
-              {({ push, form }) => (
-                <>
-                  {form.values.comments.map((comment, index) => (
-                    <div key={index} className="bg-gray-100 rounded p-2 mb-2">
-                      <p className="text-sm text-gray-800">{comment.comment}</p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(comment.commentedAt).toLocaleString()}
-                      </p>
-                    </div>
-                  ))}
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    rows="2"
-                  ></textarea>
-                  <button
-                    type="button"
-                    onClick={() => handleAddComment(push)}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
-                  >
-                    <FaCommentMedical />
-                  </button>
-                </>
-              )}
-            </FieldArray>
-          </div>
+      <Formik
+        initialValues={task || initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+        enableReinitialize
+      >
+        {({ values, handleChange, setFieldValue, resetForm }) => (
+          <Form className="space-y-4 max-w-[700px] mx-auto mt-12 rounded-2xl bg-slate-500 p-8">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Task Name
+              </label>
+              <Field
+                name="taskName"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Description
+              </label>
+              <Field
+                name="description"
+                as="textarea"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                rows="4"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Deadline
+              </label>
+              <Field
+                type="date"
+                name="deadline"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Category
+              </label>
+              <Field
+                as="select"
+                name="category"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              >
+                <option value="">Select a category</option>
+                <option value="frontend">Front End</option>
+                <option value="backend">Back End</option>
+                <option value="devops">Devops</option>
+              </Field>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Status
+              </label>
+              <Field
+                as="select"
+                name="status"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              >
+                <option value="pending">Pending</option>
+                <option value="in progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </Field>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Cost
+              </label>
+              <Field
+                type="number"
+                name="cost"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600"
-          >
-            <MdAddTask />
-          </button>
-          {editable && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Comments
+              </label>
+              <FieldArray name="comments">
+                {({ push, form }) => (
+                  <>
+                    {form.values.comments.map((comment, index) => (
+                      <div key={index} className="bg-gray-100 rounded p-2 mb-2">
+                        <p className="text-sm text-gray-800">
+                          {comment.comment}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {new Date(comment.commentedAt).toLocaleString()}
+                        </p>
+                      </div>
+                    ))}
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      rows="2"
+                    ></textarea>
+                    <button
+                      type="button"
+                      onClick={() => handleAddComment(push)}
+                      className="mt-2 px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
+                    >
+                      <FaCommentMedical />
+                    </button>
+                  </>
+                )}
+              </FieldArray>
+            </div>
+
             <button
-              type="button"
-              onClick={() => deleteTask(task._id)}
-              className="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600"
+              type="submit"
+              className="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600"
             >
-              Delete
+              <MdAddTask />
             </button>
-          )}
-        </Form>
-      )}
-    </Formik>
+            {editable && (
+              <button
+                type="button"
+                onClick={() => deleteTask(task._id)}
+                className="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600"
+              >
+                Delete
+              </button>
+            )}
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 };
 

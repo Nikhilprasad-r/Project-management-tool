@@ -4,6 +4,7 @@ import * as yup from "yup";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useApp } from "../context/AppContext";
+import { IoClose } from "react-icons/io5";
 const validationSchema = yup.object({
   name: yup.string().required("Name is required"),
   email: yup
@@ -33,7 +34,7 @@ const initialValues = {
 };
 
 const UserForm = ({ user = initialValues }) => {
-  const { apiUrl } = useApp();
+  const { apiUrl, setFormMode } = useApp();
   const deleteUser = async (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -52,6 +53,7 @@ const UserForm = ({ user = initialValues }) => {
             showConfirmButton: false,
             timer: 1500,
           });
+          setFormMode("close");
         } catch (error) {
           console.error("Error:", error);
           Swal.fire({
@@ -62,6 +64,11 @@ const UserForm = ({ user = initialValues }) => {
         }
       }
     });
+  };
+
+  const handleClose = (resetForm) => {
+    setFormMode("closed");
+    resetForm();
   };
 
   const onSubmit = async (values) => {
@@ -114,6 +121,12 @@ const UserForm = ({ user = initialValues }) => {
     >
       {({ values, setFieldValue }) => (
         <Form className=" ml-[30%] space-y-4 flex flex-col max-w-[500px]">
+          <div className="flex justify-end">
+            <IoClose
+              onClick={() => handleClose(resetForm)}
+              className="cursor-pointer"
+            />
+          </div>
           <Field name="name" className="input" placeholder="Name" />
           <Field
             name="email"
