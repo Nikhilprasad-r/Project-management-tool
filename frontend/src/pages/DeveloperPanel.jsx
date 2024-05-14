@@ -3,14 +3,13 @@ import axios from "axios";
 import { useApp } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 import TaskDetails from "../components/TaskDetails";
-import Sidebar from "../ui/Sidebar";
 
 const DeveloperPanel = () => {
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user } = useApp();
+  const { user, setFormMode, formMode } = useApp();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,13 +37,13 @@ const DeveloperPanel = () => {
 
   const handleTaskSelect = (e) => {
     setSelectedTaskId(e.target.value);
+    setFormMode("task");
   };
 
   if (!user) return <div>Redirecting...</div>;
 
   return (
     <div>
-      <Sidebar />
       <div className="container mx-auto px-4">
         <h1 className="text-xl font-bold text-center my-6">
           Hello Developer, {user.name}
@@ -64,11 +63,13 @@ const DeveloperPanel = () => {
             ))}
           </select>
         )}
-        {selectedTaskId && (
-          <TaskDetails
-            task={tasks.find((task) => task._id === selectedTaskId)}
-          />
-        )}
+        {selectedTaskId &&
+          formMode ===
+            "task"(
+              <TaskDetails
+                task={tasks.find((task) => task._id === selectedTaskId)}
+              />
+            )}
       </div>
     </div>
   );

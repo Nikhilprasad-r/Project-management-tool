@@ -5,7 +5,7 @@ import { useApp } from "../context/AppContext";
 import ProjectForm from "../components/ProjectForm";
 
 const TeamLeaderPanel = () => {
-  const { user } = useApp();
+  const { user, formMode, setFormMode } = useApp();
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -33,7 +33,10 @@ const TeamLeaderPanel = () => {
     fetchProjects();
   }, [user, navigate]);
 
-  const handleProjectSelect = (e) => setSelectedProjectId(e.target.value);
+  const handleProjectSelect = (e) => {
+    setSelectedProjectId(e.target.value);
+    setFormMode("project");
+  };
 
   if (!user) return <div>Checking authorization...</div>;
 
@@ -60,7 +63,7 @@ const TeamLeaderPanel = () => {
               <option disabled>No projects found</option>
             )}
           </select>
-          {selectedProjectId && (
+          {selectedProjectId && formMode === "project" && (
             <ProjectForm
               project={projects.find((p) => p._id === selectedProjectId)}
             />
