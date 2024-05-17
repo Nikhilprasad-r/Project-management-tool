@@ -62,7 +62,7 @@ const AdminPanel = () => {
           <option value="">Select a project</option>
           {projects.map((project) => (
             <option key={project._id} value={project._id}>
-              {project.name}
+              {project.title}
             </option>
           ))}
         </select>
