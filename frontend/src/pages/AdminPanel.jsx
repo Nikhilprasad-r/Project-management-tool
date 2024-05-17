@@ -38,13 +38,13 @@ const AdminPanel = () => {
 
   const handleProjectSelect = (e) => {
     setSelectedProjectId(e.target.value);
-    setSelectedUserId(""); // Reset the user selection
+    setSelectedUserId("");
     setFormMode("project");
   };
 
   const handleUserSelect = (e) => {
     setSelectedUserId(e.target.value);
-    setSelectedProjectId(""); // Reset the project selection
+    setSelectedProjectId("");
     setFormMode("user");
   };
 
@@ -53,9 +53,8 @@ const AdminPanel = () => {
   }
 
   return (
-    <div>
-      <Sidebar teamLeaders={teamleaders} />
-      <div className="container ml-[20%] px-4">
+    <>
+      <div className="p-4 sm:ml-64 mt-10">
         <h1 className="text-xl font-bold text-center my-6">
           Hello Admin, {user.name}
         </h1>
@@ -69,12 +68,6 @@ const AdminPanel = () => {
             </option>
           ))}
         </select>
-        {formMode === "project" && selectedProjectId && (
-          <ProjectForm
-            project={projects.find((p) => p._id === selectedProjectId)}
-            teamLeaders={teamleaders}
-          />
-        )}
 
         <h2 className="text-lg font-bold mt-6">Team Members</h2>
         <select onChange={handleUserSelect} value={selectedUserId}>
@@ -85,11 +78,18 @@ const AdminPanel = () => {
             </option>
           ))}
         </select>
-        {formMode === "user" && selectedUserId && (
-          <UserForm user={team.find((u) => u._id === selectedUserId)} />
-        )}
       </div>
-    </div>
+      {formMode === "user" && selectedUserId && (
+        <UserForm user={team.find((u) => u._id === selectedUserId)} />
+      )}
+      {formMode === "project" && selectedProjectId && (
+        <ProjectForm
+          project={projects.find((p) => p._id === selectedProjectId)}
+          users={team}
+        />
+      )}
+      <Sidebar teamLeaders={teamleaders} />
+    </>
   );
 };
 

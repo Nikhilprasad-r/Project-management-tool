@@ -36,11 +36,19 @@ const validationSchema = yup.object({
   teamLeader: yup.string().required("A team leader is required"),
 });
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 const initialValues = {
   title: "",
   description: "",
   category: "",
-  deadlines: "",
+  deadlines: formatDate(new Date()), // Default to current date
   technologies: [],
   totalManDays: 0,
   deploymentUrl: "",
@@ -54,18 +62,19 @@ const initialValues = {
   teamLeader: "",
 };
 
-const ProjectForm = ({ project = initialValues, teamLeaders }) => {
+const ProjectForm = ({ project = initialValues, users = [] }) => {
   const [newComment, setNewComment] = useState("");
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState("");
 
+  const [teamLeaders, setTeamLeads] = useState([]);
   const [showTeamLeaderSelect, setShowTeamLeaderSelect] = useState(false);
   const { apiCall, formMode, setFormMode, user } = useApp();
 
   const fetchTasks = async () => {
     try {
       const result = await apiCall("get", `/api/tasks/project/${project._id}`);
-      setTasks(result);
+      setTasks(result || []);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -79,8 +88,11 @@ const ProjectForm = ({ project = initialValues, teamLeaders }) => {
   useEffect(() => {
     if (project._id) {
       fetchTasks();
+    } else if (users && Array.isArray(users)) {
+      const teamLeads = users.filter((user) => user.role === "tl");
+      setTeamLeads(teamLeads);
     }
-  }, [project._id]);
+  }, [project._id, users]);
 
   const deleteProject = async (id) => {
     Swal.fire({
@@ -138,26 +150,31 @@ const ProjectForm = ({ project = initialValues, teamLeaders }) => {
     setShowTeamLeaderSelect(!showTeamLeaderSelect);
   };
 
+  const createTask = () => {
+    setFormMode("createTask");
+  };
+
   return (
-    <div
-      className={`fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/70`}
-    >
-      <Formik
-        initialValues={project || initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-        enableReinitialize
-      >
-        {({ values, setFieldValue, resetForm }) => (
-          <Form className="max-w-auto mx-auto bg-gray-700 p-5 rounded-lg">
-            <div className="flex justify-end py-3 text-red-600 text-2xl">
-              <IoClose
-                onClick={() => handleClose(resetForm)}
-                className="cursor-pointer"
-              />
-            </div>
-            <div className="flex justify-between gap-x-5">
-              <div>
+    <>
+      <div className="p-4 sm:ml-64 mt-10">
+        <Formik
+          initialValues={{
+            ...initialValues,
+            deadlines: formatDate(project.deadlines),
+          }}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
+          enableReinitialize
+        >
+          {({ values, setFieldValue, resetForm }) => (
+            <Form className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
+              <div className="flex justify-end py-3 text-red-600 text-2xl">
+                <IoClose
+                  onClick={() => handleClose(resetForm)}
+                  className="cursor-pointer"
+                />
+              </div>
+              <div className="grid lg:grid-cols-3 gap-4 mb-4">
                 <Field name="title" className="input" placeholder="Title" />
                 <Field
                   name="description"
@@ -262,8 +279,6 @@ const ProjectForm = ({ project = initialValues, teamLeaders }) => {
                     ))}
                   </Field>
                 )}
-              </div>
-              <div>
                 <Field
                   name="codebaseUrl"
                   type="url"
@@ -292,29 +307,6 @@ const ProjectForm = ({ project = initialValues, teamLeaders }) => {
                   className="input"
                   placeholder="Cost"
                 />
-                {/* <select
-                  onChange={handleTaskSelect}
-                  value={selectedTaskId}
-                  className="input"
-                >
-                  <option value="">Select a task</option>
-                  {project._id ? (
-                    project.tasks.map((task) => (
-                      <option key={task._id} value={task._id}>
-                        {task.taskName}
-                      </option>
-                    ))
-                  ) : (
-                    <button onClick={() => setFormMode("task")}>
-                      create task
-                    </button>
-                  )}
-                </select>
-                {selectedTaskId && formMode === "task" && (
-                  <TaskDetails
-                    task={tasks.find((task) => task._id === selectedTaskId)}
-                  />
-                )} */}
                 {project._id && (
                   <button
                     type="button"
@@ -341,54 +333,65 @@ const ProjectForm = ({ project = initialValues, teamLeaders }) => {
                     task={tasks.find((task) => task._id === selectedTaskId)}
                   />
                 )}
+                <FieldArray name="comments">
+                  {({ push, form }) => (
+                    <>
+                      {form.values.comments.map((comment, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-100 rounded p-2 mb-2"
+                        >
+                          <p className="text-sm text-gray-800">
+                            {comment.comment}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {new Date(comment.commentedAt).toLocaleString()}
+                          </p>
+                        </div>
+                      ))}
+                      <textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        className="input"
+                        placeholder="Add Comment"
+                        rows="2"
+                      ></textarea>
+                      <button
+                        type="button"
+                        onClick={() => handleAddComment(push)}
+                        className="btn-add"
+                      >
+                        Add Comment
+                      </button>
+                    </>
+                  )}
+                </FieldArray>
               </div>
-            </div>
-            <FieldArray name="comments">
-              {({ push, form }) => (
-                <>
-                  {form.values.comments.map((comment, index) => (
-                    <div key={index} className="bg-gray-100 rounded p-2 mb-2">
-                      <p className="text-sm text-gray-800">{comment.comment}</p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(comment.commentedAt).toLocaleString()}
-                      </p>
-                    </div>
-                  ))}
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    className="input"
-                    placeholder="Add Comment"
-                    rows="2"
-                  ></textarea>
-                  <button
-                    type="button"
-                    onClick={() => handleAddComment(push)}
-                    className="btn-add"
-                  >
-                    Add Comment
-                  </button>
-                </>
-              )}
-            </FieldArray>
-            <div className="flex gap-4 p-4">
-              <button type="submit" className="btn-submit">
-                Save Changes
-              </button>
-              {project._id && (
-                <button
-                  onClick={() => deleteProject(project._id)}
-                  className="btn-delete"
-                >
-                  Delete Project
+              <div className="grid lg:grid-cols-4 gap-4 p-4">
+                <button type="submit" className="btn-submit col-span-1">
+                  Save Changes
                 </button>
-              )}
-            </div>
-          </Form>
-        )}
-      </Formik>
-    </div>
+                {project._id && (
+                  <button
+                    onClick={() => deleteProject(project._id)}
+                    className="btn-delete col-span-1"
+                  >
+                    Delete Project
+                  </button>
+                )}
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
+      {formMode === "createTask" && <TaskDetails projectId={project._id} />}
+    </>
   );
+};
+
+ProjectForm.defaultProps = {
+  users: [],
+  project: initialValues,
 };
 
 export default ProjectForm;

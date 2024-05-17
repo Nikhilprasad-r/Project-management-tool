@@ -105,7 +105,7 @@ const TaskDetails = ({ task = initialValues, users, projectId }) => {
     task.assignedTo && users.find((u) => u._id === task.assignedTo);
 
   return (
-    <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/70">
+    <div className="p-4 sm:ml-64 mt-10">
       <Formik
         initialValues={task || initialValues}
         validationSchema={validationSchema}
@@ -113,98 +113,109 @@ const TaskDetails = ({ task = initialValues, users, projectId }) => {
         enableReinitialize
       >
         {({ values, handleChange, setFieldValue, resetForm }) => (
-          <Form className="max-w-md mx-auto bg-gray-700 p-5 rounded-lg">
+          <Form className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
             <div className="flex justify-end py-3 text-red-600 text-2xl">
               <IoClose
                 onClick={() => handleClose(resetForm)}
                 className="cursor-pointer"
               />
             </div>
-            <Field name="taskName" className="input" placeholder="Task Name" />
-            <Field
-              name="description"
-              as="textarea"
-              className="input"
-              placeholder="Description"
-              rows="4"
-            />
-            <Field
-              name="deadline"
-              type="date"
-              className="input"
-              placeholder="Deadline"
-            />
-            <Field name="category" as="select" className="input">
-              <option value="">Select a category</option>
-              <option value="frontend">Front End</option>
-              <option value="backend">Back End</option>
-              <option value="devops">Devops</option>
-            </Field>
-            <Field name="status" as="select" className="input">
-              <option value="pending">Pending</option>
-              <option value="in progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </Field>
-            <Field
-              name="cost"
-              type="number"
-              className="input"
-              placeholder="Cost"
-            />
-            {assignedUser ? (
-              <div className="input bg-gray-300 cursor-not-allowed">
-                Assigned to: {assignedUser.name}
-              </div>
-            ) : (
-              <Field as="select" name="assignedTo" className="input">
-                <option value="">Assign to</option>
-                {users.map((user) => (
-                  <option key={user._id} value={user._id}>
-                    {user.name}
-                  </option>
-                ))}
+
+            <div className="grid lg:grid-cols-3 gap-4 mb-4">
+              <Field
+                name="taskName"
+                className="input"
+                placeholder="Task Name"
+              />
+              <Field
+                name="description"
+                as="textarea"
+                className="input"
+                placeholder="Description"
+                rows="4"
+              />
+              <Field
+                name="deadline"
+                type="date"
+                className="input"
+                placeholder="Deadline"
+              />
+              <Field name="category" as="select" className="input">
+                <option value="">Select a category</option>
+                <option value="frontend">Front End</option>
+                <option value="backend">Back End</option>
+                <option value="devops">Devops</option>
               </Field>
-            )}
-            <FieldArray name="comments">
-              {({ push, form }) => (
-                <>
-                  {form.values.comments.map((comment, index) => (
-                    <div key={index} className="bg-gray-100 rounded p-2 mb-2">
-                      <p className="text-sm text-gray-800">{comment.comment}</p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(comment.commentedAt).toLocaleString()}
-                      </p>
-                    </div>
+              <Field name="status" as="select" className="input">
+                <option value="pending">Pending</option>
+                <option value="in progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </Field>
+              <Field
+                name="cost"
+                type="number"
+                className="input"
+                placeholder="Cost"
+              />
+              {assignedUser ? (
+                <div className="input bg-gray-300 cursor-not-allowed">
+                  Assigned to: {assignedUser.name}
+                </div>
+              ) : (
+                <Field as="select" name="assignedTo" className="input">
+                  <option value="">Assign to</option>
+                  {users.map((user) => (
+                    <option key={user._id} value={user._id}>
+                      {user.name}
+                    </option>
                   ))}
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    className="input"
-                    placeholder="Add Comment"
-                    rows="2"
-                  ></textarea>
-                  <button
-                    type="button"
-                    onClick={() => handleAddComment(push)}
-                    className="btn-add my-3"
-                  >
-                    <FaCommentMedical />
-                  </button>
-                </>
+                </Field>
               )}
-            </FieldArray>
-            <button type="submit" className="btn-submit">
-              <MdAddTask />
-            </button>
-            {editable && task._id && (
-              <button
-                type="button"
-                onClick={() => deleteTask(task._id)}
-                className="btn-delete"
-              >
-                Delete
+              <FieldArray name="comments">
+                {({ push, form }) => (
+                  <>
+                    {form.values.comments.map((comment, index) => (
+                      <div key={index} className="bg-gray-100 rounded p-2 mb-2">
+                        <p className="text-sm text-gray-800">
+                          {comment.comment}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {new Date(comment.commentedAt).toLocaleString()}
+                        </p>
+                      </div>
+                    ))}
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      className="input"
+                      placeholder="Add Comment"
+                      rows="2"
+                    ></textarea>
+                    <button
+                      type="button"
+                      onClick={() => handleAddComment(push)}
+                      className="btn-add my-3"
+                    >
+                      <FaCommentMedical />
+                    </button>
+                  </>
+                )}
+              </FieldArray>
+            </div>
+            <div className="grid lg:grid-cols-4 gap-4 p-4">
+              <button type="submit" className="btn-submit">
+                <MdAddTask />
               </button>
-            )}
+              {editable && task._id && (
+                <button
+                  type="button"
+                  onClick={() => deleteTask(task._id)}
+                  className="btn-delete"
+                >
+                  Delete
+                </button>
+              )}
+            </div>
           </Form>
         )}
       </Formik>

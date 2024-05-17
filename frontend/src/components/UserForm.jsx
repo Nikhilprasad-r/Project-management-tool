@@ -101,7 +101,7 @@ const UserForm = ({ user = initialValues }) => {
   };
 
   return (
-    <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/70">
+    <div className="p-4 sm:ml-64 mt-10">
       <Formik
         initialValues={user || initialValues}
         validationSchema={validationSchema}
@@ -109,74 +109,77 @@ const UserForm = ({ user = initialValues }) => {
         enableReinitialize
       >
         {({ values, setFieldValue, resetForm }) => (
-          <Form className="max-w-[40%] mx-auto bg-gray-700 p-5 rounded-lg">
+          <Form className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
             <div className="flex justify-end py-3 text-red-600 text-2xl">
               <IoClose
                 onClick={() => handleClose(resetForm)}
                 className="cursor-pointer"
               />
             </div>
-            <Field name="name" className="input" placeholder="Name" />
-            <Field
-              name="email"
-              type="email"
-              className="input"
-              placeholder="Email"
-            />
-            <Field
-              name="mobileNumber"
-              className="input"
-              placeholder="Mobile Number"
-            />
-            <Field name="dob" type="date" className="input" />
-            <Field name="role" as="select" className="input">
-              <option value="fed">Front End Developer</option>
-              <option value="bed">Back End Developer</option>
-              <option value="ds">Devops</option>
-              <option value="tl">Team Leader</option>
-            </Field>
-            <Field
-              name="profilePic"
-              type="url"
-              className="input"
-              placeholder="Profile Picture URL"
-            />
-            <Field
-              name="hourlyRate"
-              type="number"
-              className="input"
-              placeholder="Hourly Rate"
-            />
-            <FieldArray name="skills">
-              {({ push, remove, form }) => (
-                <>
-                  {form.values.skills.map((skill, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Field
-                        name={`skills.${index}`}
-                        className="input flex-1"
-                        placeholder="Skill"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => remove(index)}
-                        className="btn-remove"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => push("")}
-                    className="btn-add"
-                  >
-                    Add Skill
-                  </button>
-                </>
-              )}
-            </FieldArray>
-            <div className="flex justify-between">
+
+            <div className="grid lg:grid-cols-3 gap-4 mb-4">
+              <Field name="name" className="input" placeholder="Name" />
+              <Field
+                name="email"
+                type="email"
+                className="input"
+                placeholder="Email"
+              />
+              <Field
+                name="mobileNumber"
+                className="input"
+                placeholder="Mobile Number"
+              />
+              <Field name="dob" type="date" className="input" />
+              <Field name="role" as="select" className="input">
+                <option value="fed">Front End Developer</option>
+                <option value="bed">Back End Developer</option>
+                <option value="ds">Devops</option>
+                <option value="tl">Team Leader</option>
+              </Field>
+              <Field
+                name="profilePic"
+                type="url"
+                className="input"
+                placeholder="Profile Picture URL"
+              />
+              <Field
+                name="hourlyRate"
+                type="number"
+                className="input"
+                placeholder="Hourly Rate"
+              />
+              <FieldArray name="skills">
+                {({ push, remove, form }) => (
+                  <>
+                    {form.values.skills.map((skill, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <Field
+                          name={`skills.${index}`}
+                          className="input flex-1"
+                          placeholder="Skill"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className="btn-remove"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => push("")}
+                      className="btn-add"
+                    >
+                      Add Skill
+                    </button>
+                  </>
+                )}
+              </FieldArray>
+            </div>
+            <div className="grid lg:grid-cols-4 gap-4 p-4">
               <button type="submit" className="btn-submit">
                 Save User
               </button>
