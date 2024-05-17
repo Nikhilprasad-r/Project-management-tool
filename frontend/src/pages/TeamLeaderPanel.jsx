@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import ProjectForm from "../components/ProjectForm";
 
 const TeamLeaderPanel = () => {
-  const { user, formMode, setFormMode } = useApp();
+  const { user, formMode, setFormMode, apiCall } = useApp();
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
   const fetchProjects = async () => {
     try {
-      const result = await axios.get(
-        `${process.env.VITE_API_URL}/api/projects`
-      );
-      setProjects(result.data);
+      const result = await apiCall("get", `/api/projects`);
+      setProjects(result);
     } catch (error) {
       console.error("Error fetching data:", error);
       setError("Failed to load projects.");
@@ -32,7 +30,7 @@ const TeamLeaderPanel = () => {
     }
 
     fetchProjects();
-  }, [user, navigate]);
+  }, [user, navigate, apiCall]);
 
   const handleProjectSelect = (e) => {
     setSelectedProjectId(e.target.value);
@@ -48,8 +46,8 @@ const TeamLeaderPanel = () => {
       <h2 className="text-lg font-bold">Projects</h2>
       {isLoading ? (
         <p>Loading projects...</p>
-      ) : error || projects ? (
-        <p className="text-red-500">No projects found</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
       ) : (
         <>
           <select onChange={handleProjectSelect} value={selectedProjectId}>

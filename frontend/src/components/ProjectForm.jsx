@@ -3,7 +3,6 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import * as yup from "yup";
 import Swal from "sweetalert2";
 import TaskDetails from "./TaskDetails";
-import axios from "axios";
 import { useApp } from "../context/AppContext";
 import { IoClose } from "react-icons/io5";
 
@@ -57,17 +56,12 @@ const ProjectForm = ({ project = initialValues }) => {
   const [newComment, setNewComment] = useState("");
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState("");
-  const { apiUrl, formMode, setFormMode, token } = useApp();
+  const { apiCall, formMode, setFormMode } = useApp();
 
   const fetchTasks = async () => {
     try {
-      const result = await axios.get(
-        `${apiUrl}/api/tasks/project/${project._id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setTasks(result.data);
+      const result = await apiCall("get", `/api/tasks/project/${project._id}`);
+      setTasks(result);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -95,11 +89,7 @@ const ProjectForm = ({ project = initialValues }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${apiUrl}/api/project/${id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          await apiCall("delete", `/api/project/${id}`);
           Swal.fire("Project deleted successfully!", "", "success");
         } catch (error) {
           console.error("Error deleting project:", error);
@@ -111,17 +101,11 @@ const ProjectForm = ({ project = initialValues }) => {
 
   const onSubmit = async (values) => {
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
       if (project._id) {
-        await axios.put(`${apiUrl}/api/project/${project._id}`, values, config);
+        await apiCall("put", `/api/project/${project._id}`, values);
         Swal.fire("Project updated successfully!", "", "success");
       } else {
-        await axios.post(`${apiUrl}/api/project`, values, config);
+        await apiCall("post", `/api/project`, values);
         Swal.fire("Project created successfully!", "", "success");
       }
     } catch (error) {
@@ -319,7 +303,7 @@ const ProjectForm = ({ project = initialValues }) => {
               <button type="submit" className="btn-submit">
                 Save Changes
               </button>
-              {!project._id && (
+              {project._id && (
                 <button
                   onClick={() => deleteProject(project._id)}
                   className="btn-delete"

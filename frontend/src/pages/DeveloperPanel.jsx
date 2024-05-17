@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useApp } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 import TaskDetails from "../components/TaskDetails";
@@ -9,7 +8,7 @@ const DeveloperPanel = () => {
   const [selectedTaskId, setSelectedTaskId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user, setFormMode, formMode } = useApp();
+  const { user, setFormMode, formMode, apiCall } = useApp();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,10 +19,8 @@ const DeveloperPanel = () => {
     const fetchTasks = async () => {
       setLoading(true);
       try {
-        const result = await axios.get(
-          `${process.env.VITE_API_URL}/api/tasks/user/${user._id}`
-        );
-        setTasks(result.data);
+        const result = await apiCall("get", `/api/tasks/user/${user._id}`);
+        setTasks(result);
         setError(null);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -33,7 +30,7 @@ const DeveloperPanel = () => {
       }
     };
     fetchTasks();
-  }, [user, navigate]);
+  }, [user, navigate, apiCall]);
 
   const handleTaskSelect = (e) => {
     setSelectedTaskId(e.target.value);
@@ -63,13 +60,11 @@ const DeveloperPanel = () => {
             ))}
           </select>
         )}
-        {selectedTaskId &&
-          formMode ===
-            "task"(
-              <TaskDetails
-                task={tasks.find((task) => task._id === selectedTaskId)}
-              />
-            )}
+        {selectedTaskId && formMode === "task" && (
+          <TaskDetails
+            task={tasks.find((task) => task._id === selectedTaskId)}
+          />
+        )}
       </div>
     </div>
   );

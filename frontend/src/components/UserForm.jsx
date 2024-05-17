@@ -1,7 +1,6 @@
 import React from "react";
 import { Formik, Form, Field, FieldArray } from "formik";
 import * as yup from "yup";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useApp } from "../context/AppContext";
 import { IoClose } from "react-icons/io5";
@@ -35,7 +34,7 @@ const initialValues = {
 };
 
 const UserForm = ({ user = initialValues }) => {
-  const { apiUrl, setFormMode, token } = useApp();
+  const { apiCall, setFormMode } = useApp();
 
   const deleteUser = async (id) => {
     Swal.fire({
@@ -47,9 +46,7 @@ const UserForm = ({ user = initialValues }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${apiUrl}/admin/user/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          await apiCall("delete", `/admin/user/${id}`);
           Swal.fire({
             icon: "success",
             title: "User deleted",
@@ -76,15 +73,8 @@ const UserForm = ({ user = initialValues }) => {
 
   const onSubmit = async (values) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
       if (user._id) {
-        await axios.put(`${apiUrl}/admin/user/${user._id}`, values, config);
+        await apiCall("put", `/admin/user/${user._id}`, values);
         Swal.fire({
           icon: "success",
           title: "User updated successfully",
@@ -92,7 +82,7 @@ const UserForm = ({ user = initialValues }) => {
           timer: 1500,
         });
       } else {
-        await axios.post(`${apiUrl}/admin/create-user`, values, config);
+        await apiCall("post", `/admin/create-user`, values);
         Swal.fire({
           icon: "success",
           title: "User created",
@@ -111,9 +101,7 @@ const UserForm = ({ user = initialValues }) => {
   };
 
   return (
-    <div
-      className={`fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/70`}
-    >
+    <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/70">
       <Formik
         initialValues={user || initialValues}
         validationSchema={validationSchema}

@@ -4,7 +4,6 @@ import { MdAddTask } from "react-icons/md";
 import { FaCommentMedical } from "react-icons/fa6";
 import { Formik, Form, Field, FieldArray } from "formik";
 import * as yup from "yup";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { IoClose } from "react-icons/io5";
 
@@ -36,7 +35,7 @@ const initialValues = {
 };
 
 const TaskDetails = ({ task = initialValues }) => {
-  const { user, apiUrl, formMode, setFormMode, token } = useApp();
+  const { user, apiCall, formMode, setFormMode } = useApp();
   const [editable, setEditable] = useState(
     user.role === "tl" || user.role === "admin"
   );
@@ -69,11 +68,7 @@ const TaskDetails = ({ task = initialValues }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${apiUrl}/api/task/${id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          await apiCall("delete", `/api/task/${id}`);
           setFormMode("closed");
           Swal.fire("Task deleted successfully!", "", "success");
         } catch (error) {
@@ -87,19 +82,13 @@ const TaskDetails = ({ task = initialValues }) => {
   const handleSubmit = async (values, actions) => {
     actions.setSubmitting(true);
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
       if (task._id) {
-        await axios.put(`${apiUrl}/api/task/${task._id}`, values, config);
+        await apiCall("put", `/api/task/${task._id}`, values);
         Swal.fire("Task updated successfully!", "", "success");
         actions.resetForm();
         setFormMode("closed");
       } else {
-        await axios.post(`${apiUrl}/api/task`, values, config);
+        await apiCall("post", `/api/task`, values);
         Swal.fire("Task created successfully!", "", "success");
         actions.resetForm();
       }

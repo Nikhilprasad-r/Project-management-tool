@@ -84,6 +84,24 @@ export const AppProvider = ({ children }) => {
     return () => window.removeEventListener("storage", syncLogout);
   }, []);
 
+  const apiCall = async (method, url, data) => {
+    try {
+      const response = await axios({
+        method,
+        url: `${apiUrl}${url}`,
+        data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("API call error:", error.response?.data || error.message);
+      throw error;
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -95,6 +113,7 @@ export const AppProvider = ({ children }) => {
         apiUrl,
         formMode,
         setFormMode,
+        apiCall,
       }}
     >
       {children}

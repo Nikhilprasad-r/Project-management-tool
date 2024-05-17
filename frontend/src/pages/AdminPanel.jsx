@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import ProjectForm from "../components/ProjectForm";
 import UserForm from "../components/UserForm";
 import { useApp } from "../context/AppContext";
@@ -11,7 +10,7 @@ const AdminPanel = () => {
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [team, setTeam] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState("");
-  const { user, formMode, setFormMode } = useApp();
+  const { user, formMode, setFormMode, apiCall } = useApp();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,17 +21,17 @@ const AdminPanel = () => {
     const fetchData = async () => {
       try {
         const [projectData, userData] = await Promise.all([
-          axios.get(`${process.env.VITE_API_URL}/admin/projects`),
-          axios.get(`${process.env.VITE_API_URL}/admin/users`),
+          apiCall("get", `/admin/projects`),
+          apiCall("get", `/admin/users`),
         ]);
-        setProjects(projectData.data);
-        setTeam(userData.data);
+        setProjects(projectData);
+        setTeam(userData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
-  }, [navigate, user]);
+  }, [navigate, user, apiCall]);
 
   const handleProjectSelect = (e) => {
     setSelectedProjectId(e.target.value);
