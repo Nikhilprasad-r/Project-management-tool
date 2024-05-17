@@ -88,7 +88,7 @@ const ProjectForm = ({ project = initialValues, users = [] }) => {
   useEffect(() => {
     if (project._id) {
       fetchTasks();
-    } else if (users && Array.isArray(users)) {
+    } else if (users) {
       const teamLeads = users.filter((user) => user.role === "tl");
       setTeamLeads(teamLeads);
     }
@@ -387,11 +387,6 @@ const ProjectForm = ({ project = initialValues, users = [] }) => {
       {formMode === "createTask" && <TaskDetails projectId={project._id} />}
     </>
   );
-};
-
-ProjectForm.defaultProps = {
-  users: [],
-  project: initialValues,
 };
 
 export default ProjectForm;

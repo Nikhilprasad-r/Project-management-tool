@@ -34,7 +34,7 @@ export const AppProvider = ({ children }) => {
     setUser(userData);
     setToken(token);
 
-    if (userData.isadmin) {
+    if (userData.isAdmin) {
       navigate("/admin");
     } else if (userData.role === "tl") {
       navigate("/teamleader");
@@ -49,7 +49,7 @@ export const AppProvider = ({ children }) => {
     setIsAuthenticated(false);
     setUser(null);
     setToken(null);
-    navigate("/");
+    navigate("/signin");
   };
 
   const validateToken = async (token) => {

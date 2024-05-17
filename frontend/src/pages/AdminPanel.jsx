@@ -34,7 +34,7 @@ const AdminPanel = () => {
       }
     };
     fetchData();
-  }, [navigate, user, apiCall]);
+  }, [user]);
 
   const handleProjectSelect = (e) => {
     setSelectedProjectId(e.target.value);
