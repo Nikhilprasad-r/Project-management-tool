@@ -30,9 +30,10 @@ const validationSchema = yup.object({
     .required("Cost is required"),
   comments: yup.array().of(
     yup.object({
-      comment: yup.string().required("Comment is required"),
+      comment: yup.string(),
     })
   ),
+  teamLeader: yup.string().required("A team leader is required"),
 });
 
 const initialValues = {
@@ -50,13 +51,16 @@ const initialValues = {
   cost: 0,
   comments: [],
   tasks: [],
+  teamLeader: "",
 };
 
-const ProjectForm = ({ project = initialValues }) => {
+const ProjectForm = ({ project = initialValues, teamLeaders }) => {
   const [newComment, setNewComment] = useState("");
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState("");
-  const { apiCall, formMode, setFormMode } = useApp();
+
+  const [showTeamLeaderSelect, setShowTeamLeaderSelect] = useState(false);
+  const { apiCall, formMode, setFormMode, user } = useApp();
 
   const fetchTasks = async () => {
     try {
@@ -129,6 +133,9 @@ const ProjectForm = ({ project = initialValues }) => {
     setFormMode("closed");
     setSelectedTaskId("");
     resetForm();
+  };
+  const handleToggleTeamLeaderSelect = () => {
+    setShowTeamLeaderSelect(!showTeamLeaderSelect);
   };
 
   return (
@@ -216,6 +223,45 @@ const ProjectForm = ({ project = initialValues }) => {
                   className="input"
                   placeholder="Deployment URL"
                 />
+                {values.teamLeader && !showTeamLeaderSelect ? (
+                  <div>
+                    <label>Team Leader</label>
+                    <input
+                      type="text"
+                      className="input"
+                      value={
+                        teamLeaders.find(
+                          (leader) => leader._id === values.teamLeader
+                        )?.name || ""
+                      }
+                      readOnly
+                    />
+                    <button
+                      type="button"
+                      onClick={handleToggleTeamLeaderSelect}
+                      className="btn-edit"
+                    >
+                      Change Team Leader
+                    </button>
+                  </div>
+                ) : (
+                  <Field
+                    name="teamLeader"
+                    as="select"
+                    className="input"
+                    onChange={(e) => {
+                      setFieldValue("teamLeader", e.target.value);
+                      handleToggleTeamLeaderSelect();
+                    }}
+                  >
+                    <option value="">Assign Team Leader</option>
+                    {teamLeaders.map((leader) => (
+                      <option key={leader._id} value={leader._id}>
+                        {leader.name}
+                      </option>
+                    ))}
+                  </Field>
+                )}
               </div>
               <div>
                 <Field
@@ -246,7 +292,7 @@ const ProjectForm = ({ project = initialValues }) => {
                   className="input"
                   placeholder="Cost"
                 />
-                <select
+                {/* <select
                   onChange={handleTaskSelect}
                   value={selectedTaskId}
                   className="input"
@@ -263,6 +309,32 @@ const ProjectForm = ({ project = initialValues }) => {
                       create task
                     </button>
                   )}
+                </select>
+                {selectedTaskId && formMode === "task" && (
+                  <TaskDetails
+                    task={tasks.find((task) => task._id === selectedTaskId)}
+                  />
+                )} */}
+                {project._id && (
+                  <button
+                    type="button"
+                    onClick={createTask}
+                    className="btn-create-task"
+                  >
+                    Create Task
+                  </button>
+                )}
+                <select
+                  onChange={handleTaskSelect}
+                  value={selectedTaskId}
+                  className="input"
+                >
+                  <option value="">Select a task</option>
+                  {tasks.map((task) => (
+                    <option key={task._id} value={task._id}>
+                      {task.name}
+                    </option>
+                  ))}
                 </select>
                 {selectedTaskId && formMode === "task" && (
                   <TaskDetails

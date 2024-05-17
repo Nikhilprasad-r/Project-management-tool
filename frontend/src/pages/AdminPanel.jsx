@@ -9,6 +9,7 @@ const AdminPanel = () => {
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [team, setTeam] = useState([]);
+  const [teamleaders, setTeamLeads] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState("");
   const { user, formMode, setFormMode, apiCall } = useApp();
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ const AdminPanel = () => {
         ]);
         setProjects(projectData);
         setTeam(userData);
+        const teamLeads = userData.filter((user) => user.role === "tl");
+        setTeamLeads(teamLeads);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -51,7 +54,7 @@ const AdminPanel = () => {
 
   return (
     <div>
-      <Sidebar />
+      <Sidebar teamLeaders={teamleaders} />
       <div className="container ml-[20%] px-4">
         <h1 className="text-xl font-bold text-center my-6">
           Hello Admin, {user.name}
@@ -69,6 +72,7 @@ const AdminPanel = () => {
         {formMode === "project" && selectedProjectId && (
           <ProjectForm
             project={projects.find((p) => p._id === selectedProjectId)}
+            teamLeaders={teamleaders}
           />
         )}
 

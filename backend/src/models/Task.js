@@ -4,10 +4,6 @@ const taskSchema = new mongoose.Schema({
   taskName: String,
   description: String,
   deadline: Date,
-  teamLeader: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
   category: String,
   fileAttachments: [String],
   versionBranch: {

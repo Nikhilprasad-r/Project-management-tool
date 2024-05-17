@@ -32,9 +32,10 @@ const initialValues = {
   status: "pending",
   cost: 0,
   comments: [],
+  assignedTo: "",
 };
 
-const TaskDetails = ({ task = initialValues }) => {
+const TaskDetails = ({ task = initialValues, users, projectId }) => {
   const { user, apiCall, formMode, setFormMode } = useApp();
   const [editable, setEditable] = useState(
     user.role === "tl" || user.role === "admin"
@@ -85,13 +86,13 @@ const TaskDetails = ({ task = initialValues }) => {
       if (task._id) {
         await apiCall("put", `/api/task/${task._id}`, values);
         Swal.fire("Task updated successfully!", "", "success");
-        actions.resetForm();
-        setFormMode("closed");
       } else {
+        values.projectId = projectId;
         await apiCall("post", `/api/task`, values);
         Swal.fire("Task created successfully!", "", "success");
-        actions.resetForm();
       }
+      actions.resetForm();
+      setFormMode("closed");
     } catch (error) {
       console.error("Error updating task:", error);
       Swal.fire("Failed to update task", "", "error");
@@ -100,10 +101,11 @@ const TaskDetails = ({ task = initialValues }) => {
     }
   };
 
+  const assignedUser =
+    task.assignedTo && users.find((u) => u._id === task.assignedTo);
+
   return (
-    <div
-      className={`fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/70`}
-    >
+    <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/70">
       <Formik
         initialValues={task || initialValues}
         validationSchema={validationSchema}
@@ -149,6 +151,20 @@ const TaskDetails = ({ task = initialValues }) => {
               className="input"
               placeholder="Cost"
             />
+            {assignedUser ? (
+              <div className="input bg-gray-300 cursor-not-allowed">
+                Assigned to: {assignedUser.name}
+              </div>
+            ) : (
+              <Field as="select" name="assignedTo" className="input">
+                <option value="">Assign to</option>
+                {users.map((user) => (
+                  <option key={user._id} value={user._id}>
+                    {user.name}
+                  </option>
+                ))}
+              </Field>
+            )}
             <FieldArray name="comments">
               {({ push, form }) => (
                 <>

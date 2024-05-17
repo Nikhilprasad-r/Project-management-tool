@@ -3,10 +3,19 @@ import Task from "../models/Task.js";
 import User from "../models/User.js";
 
 export const createProject = async (req, res) => {
-  const newProject = new Project({ ...req.body, teamLeader: req.user._id });
+  const { teamLeaderId, ...projectData } = req.body;
+  const newProject = new Project({ ...projectData, teamLeader: teamLeaderId });
 
   try {
     const savedProject = await newProject.save();
+    const updatedUser = await User.findByIdAndUpdate(
+      teamLeaderId,
+      {
+        $push: { projects: savedProject._id },
+      },
+      { new: true }
+    );
+
     res.status(201).send(savedProject);
   } catch (error) {
     res.status(400).send(error);
@@ -51,19 +60,21 @@ export const deleteProject = async (req, res) => {
   }
 };
 export const taskCreation = async (req, res) => {
-  const {
-    projectId,
-    assignedTo,
-    taskName,
-    description,
-    technologies,
-    teamLeader,
-    deadline,
-    category,
-  } = req.body;
-  const newTask = new Task(req.body);
+  const { projectId, assignedTo, ...taskData } = req.body;
+  const newTask = new Task({ ...taskData, projectId, assignedTo });
+
   try {
     const savedTask = await newTask.save();
+
+    await Project.findByIdAndUpdate(projectId, {
+      $push: { tasks: savedTask._id },
+    });
+
+    await User.updateMany(
+      { _id: { $in: assignedTo } },
+      { $push: { tasks: savedTask._id } }
+    );
+
     res.status(201).json(savedTask);
   } catch (error) {
     res.status(400).json(error);

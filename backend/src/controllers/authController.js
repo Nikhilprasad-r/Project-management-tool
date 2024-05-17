@@ -256,7 +256,25 @@ export const updateUser = async (req, res) => {
 };
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const usersdata = await User.find();
+    const users = usersdata.map((user) => {
+      return {
+        name: user.name,
+        email: user.email,
+        mobileNumber: user.mobileNumber,
+        skills: user.skills,
+        hourlyRate: user.hourlyRate,
+        role: user.role,
+        isAdmin: user.isAdmin,
+        isActive: user.isActive,
+        dob: user.dob,
+        profilePic: user.profilePic,
+        _id: user._id,
+        tasks: user.tasks,
+        projects: user.projects,
+      };
+    });
+
     res.status(200).json(users);
   } catch (err) {
     console.error(err.message);
