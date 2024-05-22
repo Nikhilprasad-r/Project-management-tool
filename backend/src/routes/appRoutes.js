@@ -26,7 +26,7 @@ const router = express.Router();
 // Project routes
 router.get("/admin/users-projects", auth, isAdmin, getAllUsersWithProjects);
 router.get("/admin/projects", auth, isAdmin, getallProjects);
-router.get("/api/projects", auth, isTl, getProjects);
+router.get("/api/tl/projects", auth, isTl, getProjects);
 router.post("/api/project", auth, isAdmin, createProject);
 router.put("/api/project/:id", auth, isTl, projectUpdate);
 router.delete("/api/project/:id", auth, isAdmin, deleteProject);

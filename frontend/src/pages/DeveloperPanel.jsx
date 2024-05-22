@@ -40,9 +40,9 @@ const DeveloperPanel = () => {
   if (!user) return <div>Redirecting...</div>;
 
   return (
-    <div>
+    <div className="mt-14 p-6">
       <div className="container mx-auto px-4">
-        <h1 className="text-xl font-bold text-center my-6">
+        <h1 className="text-xl font-bold text-center my-6 capitalize">
           Hello Developer, {user.name}
         </h1>
         <h2 className="text-lg font-bold">Tasks</h2>

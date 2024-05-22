@@ -54,30 +54,32 @@ const AdminPanel = () => {
 
   return (
     <>
-      <div className="p-4 sm:ml-64 mt-10">
-        <h1 className="text-xl font-bold text-center my-6">
-          Hello Admin, {user.name}
-        </h1>
+      <div className="sm:ml-64 mt-14 p-6">
+        <div className="container mx-auto px-4">
+          <h1 className="text-xl font-bold text-center my-6 capitalize">
+            Hello Admin, {user.name}
+          </h1>
 
-        <h2 className="text-lg font-bold">Projects</h2>
-        <select onChange={handleProjectSelect} value={selectedProjectId}>
-          <option value="">Select a project</option>
-          {projects.map((project) => (
-            <option key={project._id} value={project._id}>
-              {project.title}
-            </option>
-          ))}
-        </select>
+          <h2 className="text-lg font-bold">Projects</h2>
+          <select onChange={handleProjectSelect} value={selectedProjectId}>
+            <option value="">Select a project</option>
+            {projects.map((project) => (
+              <option key={project._id} value={project._id}>
+                {project.title}
+              </option>
+            ))}
+          </select>
 
-        <h2 className="text-lg font-bold mt-6">Team Members</h2>
-        <select onChange={handleUserSelect} value={selectedUserId}>
-          <option value="">Select a user to view or edit</option>
-          {team.map((user) => (
-            <option key={user._id} value={user._id}>
-              {user.name}
-            </option>
-          ))}
-        </select>
+          <h2 className="text-lg font-bold mt-6">Team Members</h2>
+          <select onChange={handleUserSelect} value={selectedUserId}>
+            <option value="">Select a user to view or edit</option>
+            {team.map((user) => (
+              <option key={user._id} value={user._id}>
+                {user.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       {formMode === "user" && selectedUserId && (
         <UserForm user={team.find((u) => u._id === selectedUserId)} />
