@@ -19,7 +19,7 @@ const DeveloperPanel = () => {
     const fetchTasks = async () => {
       setLoading(true);
       try {
-        const result = await apiCall("get", `/api/tasks/user/${user._id}`);
+        const result = await apiCall("get", `/api/tasks/user/${user.id}`);
         setTasks(result);
         setError(null);
       } catch (error) {

@@ -39,6 +39,7 @@ const validationSchema = yup.object({
 });
 
 const formatDate = (dateString) => {
+  if (!dateString) return "";
   const date = new Date(dateString);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -50,7 +51,7 @@ const initialValues = {
   title: "",
   description: "",
   category: "",
-  deadlines: formatDate(new Date()), // Default to current date
+  deadlines: "", // Default to empty string
   technologies: [],
   totalManDays: 0,
   deploymentUrl: "",
@@ -64,12 +65,14 @@ const initialValues = {
   teamLeader: "",
 };
 
-const ProjectForm = ({ project = initialValues, users = [] }) => {
+const ProjectForm = ({
+  project = initialValues,
+  teamLeaders = [],
+  users = [],
+}) => {
   const [newComment, setNewComment] = useState("");
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState("");
-
-  const [teamLeaders, setTeamLeads] = useState([]);
   const [showTeamLeaderSelect, setShowTeamLeaderSelect] = useState(false);
   const { apiCall, formMode, setFormMode, user } = useApp();
 
@@ -90,11 +93,8 @@ const ProjectForm = ({ project = initialValues, users = [] }) => {
   useEffect(() => {
     if (project._id) {
       fetchTasks();
-    } else if (users) {
-      const teamLeads = users.filter((user) => user.role === "tl");
-      setTeamLeads(teamLeads);
     }
-  }, [project._id, users]);
+  }, [project]);
 
   const deleteProject = async (id) => {
     Swal.fire({
@@ -148,6 +148,7 @@ const ProjectForm = ({ project = initialValues, users = [] }) => {
     setSelectedTaskId("");
     resetForm();
   };
+
   const handleToggleTeamLeaderSelect = () => {
     setShowTeamLeaderSelect(!showTeamLeaderSelect);
   };
@@ -156,14 +157,22 @@ const ProjectForm = ({ project = initialValues, users = [] }) => {
     setFormMode("createTask");
   };
 
+  const isEditMode = Boolean(project._id);
+
   return (
     <>
       <div className="p-4 sm:ml-64 mt-10">
         <Formik
-          initialValues={{
-            ...initialValues,
-            deadlines: formatDate(project.deadlines),
-          }}
+          initialValues={
+            isEditMode
+              ? {
+                  ...initialValues,
+                  ...project,
+                  deadlines: formatDate(project.deadlines),
+                  teamLeader: project.teamLeader,
+                }
+              : initialValues
+          }
           validationSchema={validationSchema}
           onSubmit={onSubmit}
           enableReinitialize
@@ -242,26 +251,9 @@ const ProjectForm = ({ project = initialValues, users = [] }) => {
                   className="input"
                   placeholder="Deployment URL"
                 />
-                {values.teamLeader && !showTeamLeaderSelect ? (
-                  <div>
-                    <label>Team Leader</label>
-                    <input
-                      type="text"
-                      className="input"
-                      value={
-                        teamLeaders.find(
-                          (leader) => leader._id === values.teamLeader
-                        )?.name || ""
-                      }
-                      readOnly
-                    />
-                    <button
-                      type="button"
-                      onClick={handleToggleTeamLeaderSelect}
-                      className="btn-edit"
-                    >
-                      Change Team Leader
-                    </button>
+                {project._id ? (
+                  <div className="input capitalize">
+                    {users.find((user) => user._id === project.teamLeader).name}
                   </div>
                 ) : (
                   <Field

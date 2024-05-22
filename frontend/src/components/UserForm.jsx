@@ -23,7 +23,14 @@ const validationSchema = yup.object({
     .min(0, "Hourly rate must be a positive number"),
   skills: yup.array().of(yup.string()),
 });
-
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 const initialValues = {
   name: "",
   email: "",
@@ -101,11 +108,16 @@ const UserForm = ({ user = initialValues }) => {
       });
     }
   };
+  const isEditMode = Boolean(user._id);
 
   return (
     <div className="p-4 sm:ml-64 mt-10">
       <Formik
-        initialValues={user || initialValues}
+        initialValues={
+          isEditMode
+            ? { ...user, dob: formatDate(user.dob) }
+            : { ...initialValues }
+        }
         validationSchema={validationSchema}
         onSubmit={onSubmit}
         enableReinitialize

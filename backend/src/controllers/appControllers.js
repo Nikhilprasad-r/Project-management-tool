@@ -3,13 +3,14 @@ import Task from "../models/Task.js";
 import User from "../models/User.js";
 
 export const createProject = async (req, res) => {
-  const { teamLeaderId, ...projectData } = req.body;
-  const newProject = new Project({ ...projectData, teamLeader: teamLeaderId });
+  console;
+  const { teamLeader, ...projectData } = req.body;
+  const newProject = new Project({ ...projectData, teamLeader: teamLeader });
 
   try {
     const savedProject = await newProject.save();
     const updatedUser = await User.findByIdAndUpdate(
-      teamLeaderId,
+      teamLeader,
       {
         $push: { projects: savedProject._id },
       },
@@ -31,7 +32,7 @@ export const getallProjects = async (req, res) => {
 };
 export const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ teamLeader: req.user._id }).populate(
+    const projects = await Project.find({ teamLeader: req.user.id }).populate(
       "tasks"
     );
     res.status(200).json(projects);
@@ -41,16 +42,23 @@ export const getProjects = async (req, res) => {
 };
 export const projectUpdate = async (req, res) => {
   try {
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
     const updatedProject = await Project.findByIdAndUpdate(
       req.params.id,
       { $set: req.body },
-      { new: true }
+      { new: true, runValidators: true }
     );
     res.status(200).json(updatedProject);
   } catch (error) {
-    res.status(400).json(error);
+    console.error("Error updating project:", error);
+    res.status(400).json({ message: "Failed to update project", error });
   }
 };
+
 export const deleteProject = async (req, res) => {
   try {
     await Project.findByIdAndDelete(req.params.id);
