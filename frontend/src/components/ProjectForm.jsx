@@ -5,6 +5,8 @@ import Swal from "sweetalert2";
 import TaskDetails from "./TaskDetails";
 import { useApp } from "../context/AppContext";
 import { IoClose } from "react-icons/io5";
+import { FaDeleteLeft, FaCommentMedical } from "react-icons/fa6";
+import { MdDeleteForever } from "react-icons/md";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -174,7 +176,7 @@ const ProjectForm = ({ project = initialValues, users = [] }) => {
                   className="cursor-pointer"
                 />
               </div>
-              <div className="grid lg:grid-cols-3 gap-4 mb-4">
+              <div className="grid lg:grid-cols-2 gap-4 mb-4">
                 <Field name="title" className="input" placeholder="Title" />
                 <Field
                   name="description"
@@ -214,7 +216,7 @@ const ProjectForm = ({ project = initialValues, users = [] }) => {
                             onClick={() => remove(index)}
                             className="btn-remove"
                           >
-                            Remove
+                            <FaDeleteLeft />
                           </button>
                         </div>
                       ))}
@@ -361,7 +363,7 @@ const ProjectForm = ({ project = initialValues, users = [] }) => {
                         onClick={() => handleAddComment(push)}
                         className="btn-add"
                       >
-                        Add Comment
+                        <FaCommentMedical />
                       </button>
                     </>
                   )}
@@ -376,7 +378,7 @@ const ProjectForm = ({ project = initialValues, users = [] }) => {
                     onClick={() => deleteProject(project._id)}
                     className="btn-delete col-span-1"
                   >
-                    Delete Project
+                    <MdDeleteForever />
                   </button>
                 )}
               </div>

@@ -4,6 +4,8 @@ import * as yup from "yup";
 import Swal from "sweetalert2";
 import { useApp } from "../context/AppContext";
 import { IoClose } from "react-icons/io5";
+import { FaDeleteLeft, FaCommentMedical } from "react-icons/fa6";
+import { MdDeleteForever } from "react-icons/md";
 
 const validationSchema = yup.object({
   name: yup.string().required("Name is required"),
@@ -117,7 +119,7 @@ const UserForm = ({ user = initialValues }) => {
               />
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-4 mb-4">
+            <div className="grid lg:grid-cols-2 gap-4 mb-4">
               <Field name="name" className="input" placeholder="Name" />
               <Field
                 name="email"
@@ -164,7 +166,7 @@ const UserForm = ({ user = initialValues }) => {
                           onClick={() => remove(index)}
                           className="btn-remove"
                         >
-                          Remove
+                          <FaDeleteLeft />
                         </button>
                       </div>
                     ))}
@@ -189,7 +191,7 @@ const UserForm = ({ user = initialValues }) => {
                   onClick={() => deleteUser(user._id)}
                   className="btn-delete"
                 >
-                  Delete
+                  <MdDeleteForever />
                 </button>
               )}
             </div>

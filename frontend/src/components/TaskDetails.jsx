@@ -6,6 +6,7 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import * as yup from "yup";
 import Swal from "sweetalert2";
 import { IoClose } from "react-icons/io5";
+import { MdDeleteForever } from "react-icons/md";
 
 const validationSchema = yup.object({
   taskName: yup.string().required("Task name is required"),
@@ -121,7 +122,7 @@ const TaskDetails = ({ task = initialValues, users, projectId }) => {
               />
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-4 mb-4">
+            <div className="grid lg:grid-cols-2 gap-4 mb-4">
               <Field
                 name="taskName"
                 className="input"
@@ -212,7 +213,7 @@ const TaskDetails = ({ task = initialValues, users, projectId }) => {
                   onClick={() => deleteTask(task._id)}
                   className="btn-delete"
                 >
-                  Delete
+                  <MdDeleteForever />
                 </button>
               )}
             </div>
