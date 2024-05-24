@@ -74,6 +74,7 @@ const ProjectForm = ({
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState("");
   const [showTeamLeaderSelect, setShowTeamLeaderSelect] = useState(false);
+  const [newTask, setNewTask] = useState(false);
   const { apiCall, formMode, setFormMode, user } = useApp();
 
   const fetchTasks = async () => {
@@ -154,7 +155,7 @@ const ProjectForm = ({
   };
 
   const createTask = () => {
-    setFormMode("createTask");
+    setNewTask(true);
   };
 
   const isEditMode = Boolean(project._id);
@@ -378,7 +379,7 @@ const ProjectForm = ({
           )}
         </Formik>
       </div>
-      {formMode === "createTask" && <TaskDetails projectId={project._id} />}
+      {newTask && <TaskDetails projectId={project._id} />}
     </>
   );
 };

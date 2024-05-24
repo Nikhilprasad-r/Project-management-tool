@@ -58,6 +58,22 @@ export const projectUpdate = async (req, res) => {
     res.status(400).json({ message: "Failed to update project", error });
   }
 };
+export const getTeam = async (req, res) => {
+  try {
+    const users = await User.find();
+    const team = users.map((user) => {
+      return {
+        name: user.name,
+        _id: user._id,
+        tasks: user.tasks,
+        projects: user.projects,
+      };
+    });
+    res.status(200).json(team);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 
 export const deleteProject = async (req, res) => {
   try {

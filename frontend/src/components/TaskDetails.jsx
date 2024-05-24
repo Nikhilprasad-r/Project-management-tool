@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { MdAddTask } from "react-icons/md";
 import { FaCommentMedical } from "react-icons/fa6";
@@ -44,8 +44,9 @@ const initialValues = {
   assignedTo: "",
 };
 
-const TaskDetails = ({ task = initialValues, users, projectId }) => {
+const TaskDetails = ({ task = initialValues, projectId }) => {
   const { user, apiCall, formMode, setFormMode } = useApp();
+  const [users, setUsers] = useState([]);
   const [editable, setEditable] = useState(
     user.role === "tl" || user.role === "admin"
   );
@@ -61,7 +62,18 @@ const TaskDetails = ({ task = initialValues, users, projectId }) => {
       setNewComment("");
     }
   };
+  const fetchUsers = async () => {
+    try {
+      const response = await apiCall("get", "/api/team");
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
+  useEffect(() => {
+    fetchUsers();
+  }, [task]);
   const handleClose = (resetForm) => {
     setFormMode("closed");
     resetForm();
@@ -183,13 +195,15 @@ const TaskDetails = ({ task = initialValues, users, projectId }) => {
               ) : (
                 <Field as="select" name="assignedTo" className="input">
                   <option value="">Assign to</option>
-                  {users.map((user) => (
-                    <option key={user._id} value={user._id}>
-                      {user.name}
-                    </option>
-                  ))}
+                  {users &&
+                    users.map((user) => (
+                      <option key={user._id} value={user._id}>
+                        {user.name}
+                      </option>
+                    ))}
                 </Field>
               )}
+
               <FieldArray name="comments">
                 {({ push, form }) => (
                   <>

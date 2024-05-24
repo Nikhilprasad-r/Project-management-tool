@@ -19,11 +19,13 @@ import {
   getTasksByUser,
   completeProject,
   getallProjects,
+  getTeam,
 } from "../controllers/appControllers.js";
 
 const router = express.Router();
 
 // Project routes
+
 router.get("/admin/users-projects", auth, isAdmin, getAllUsersWithProjects);
 router.get("/admin/projects", auth, isAdmin, getallProjects);
 router.get("/api/tl/projects", auth, isTl, getProjects);
@@ -44,6 +46,7 @@ router.post(
 );
 
 // Task routes
+router.get("/api/team", auth, getTeam);
 router.post("/api/task", auth, isTl, taskCreation);
 router.put("/api/task/:id", auth, taskUpdate);
 router.get("/api/tasks", auth, isTl, getTasks);
